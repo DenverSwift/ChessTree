@@ -27,10 +27,20 @@ Idea 4
 [Name "King's gambit"]
 1. E4 E5
 2. F4 ExF4
-2.0.1.2.1.1.1.1.0.1
+2.2.1
+ход, номер вариации от которой просходит этот вариант, номер самой вариации
 2.1. NC6
 2.2. D5
 
+Idea 5
+[Name "King's gambit"]
+{
+  "id": "a7f3",
+  "moveNumber": 2,
+  "move": "Nc6",
+  "parentId": "e4b1",
+  "children": ["c91d", "f002"]
+}
 
 
 
