@@ -1,8 +1,23 @@
-[Name "King's gambit"]
 {
-  "id": "5jhn3wak8jk", 
-  "depth": 2,
-  "move": "Nc6",
-  "parentId": "e4b1",
-  "childrenId": ["c91d", "f002"]
+  "meta": {
+    "name": "King's Gambit",
+    "createdAt": "2026-02-01 10:30:001",
+    "updatedAt": "2026-02-01 11:15:003",
+  },
+  "nodes": [
+    {
+      "id": "e4b1",
+      "depth": 1,
+      "move": "e4",
+      "parentId": null,
+      "childrenIds": ["a7f3"]
+    },
+    {
+      "id": "a7f3",
+      "depth": 2,
+      "move": "Nc6",
+      "parentId": "e4b1",
+      "childrenIds": ["c91d", "f002"]
+    }
+  ]
 }
