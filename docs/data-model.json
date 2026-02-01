@@ -6,18 +6,18 @@
   },
   "nodes": [
     {
-      "id": "e4b1",
+      "id": "5jhn3xl4ntg",
       "depth": 1,
       "move": "e4",
       "parentId": null,
-      "childrenIds": ["a7f3"]
+      "childrenIds": ["5jhn3xl4ols"]
     },
     {
-      "id": "a7f3",
+      "id": "5jhn3xl4ols\n",
       "depth": 2,
       "move": "Nc6",
-      "parentId": "e4b1",
-      "childrenIds": ["c91d", "f002"]
+      "parentId": "5jhn3xl4ntg",
+      "childrenIds": ["5jhn3xl4pdw", "5jhn3xl4q60"]
     }
   ]
 }
