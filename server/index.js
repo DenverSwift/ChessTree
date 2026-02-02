@@ -74,10 +74,31 @@ function editNode(nameTree, id, newMove) {
 
 function delNode(nameTree, id) {
     let parsedData = JSON.parse(fs.readFileSync(`./${nameTree}.json`))
+
     parsedData.nodes = parsedData.nodes.filter((node) => node.id !== id)
 
     let data = JSON.stringify(parsedData, null, 2);
     fs.writeFileSync(`./${nameTree}.json`, data);
 }
 
+function deleteBranch(nameTree, id) {
+
+}
+
+function resolveDeleteMethod(nameTree, id) {
+    let parsedData = JSON.parse(fs.readFileSync(`./${nameTree}.json`))
+    const node = parsedData.nodes.find((node) => node.id === id);
+
+    if (node.childrenIds.length === 0) {
+        delNode(nameTree, id);
+    } else {
+        const wipeMode = prompt("removeBranch/resetNode");
+
+        if (wipeMode === "removeBranch") {
+            deleteBranch(nameTree, id);
+        } else if (wipeMode === "resetNode") {
+            editNode(nameTree, id, "");
+        }
+    }
+}
 delNode('test', '5jhn3xl4ols')
