@@ -13,6 +13,16 @@
       "childrenIds": [
         "5jhn3xl4ols"
       ]
+    },
+    {
+      "id": "5jhn3xl4ols",
+      "depth": 2,
+      "move": "asd",
+      "parentId": "5jhn3xl4ntg",
+      "childrenIds": [
+        "5jhn3xl4pdw",
+        "5jhn3xl4q60"
+      ]
     }
   ]
 }
