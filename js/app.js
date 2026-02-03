@@ -42,3 +42,16 @@ function returnButton() {
     contentLayer.style.transform = `translate(0px, 0px)`;
 }
 
+const myElement = document.getElementById('myElement');
+
+// Function to hide the element
+function hideElement() {
+    myElement.classList.add('is-hidden');
+    myElement.classList.remove('is-visible'); // Optional: remove other classes
+}
+
+// Function to show the element
+function showElement() {
+    myElement.classList.remove('is-hidden');
+    myElement.classList.add('is-visible'); // Optional: add other classes
+}
