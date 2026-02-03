@@ -8,24 +8,31 @@
 </head>
 <body>
 <div class="container">
-    <aside class="sidebar">
-        <h1>ChessTree</h1>
-        <ul>
-            <li class="list_element" onclick="log()">King's gambit</li>
-            <li class="list_element" onclick="log()">Sicilian defence</li>
-            <li class="list_element" onclick="log()">Italian game</li>
-        </ul>
-    </aside>
-
     <div id="grid" class="main-content">
         <div id="node">
             <h1 id="center">Center</h1>
         </div>
     </div>
 </div>
+
 <button class="return-button">
     <img class="return-button-svg" src="img/target.svg" alt="Go back button" onclick="returnButton()"/>
 </button>
+
+<select class="select-list" name="Tree">
+        <option value="1">King's gambit</option>
+        <option value="2">Sicilian defence</option>
+        <option value="3">Italian game</option>
+</select>
+
+<!--<aside class="sidebar">-->
+<!--    <h1>ChessTree</h1>-->
+<!--    <ul>-->
+<!--        <li class="list_element" onclick="log()">King's gambit</li>-->
+<!--        <li class="list_element" onclick="log()">Sicilian defence</li>-->
+<!--        <li class="list_element" onclick="log()">Italian game</li>-->
+<!--    </ul>-->
+<!--</aside>-->
 
 <script src="js/app.js"></script>
 </body>
