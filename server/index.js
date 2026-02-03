@@ -36,15 +36,7 @@ function createEmptyTree(name) {
             createdAt: getTime(),
             updatedAt: getTime(),
         },
-        nodes: [
-            {
-                id: generateId(),
-                depth: 1,
-                move: null,
-                parentId: null,
-                childrenIds: [],
-            },
-        ],
+        nodes: [],
     };
     fs.writeFileSync(`./${name}.json`, JSON.stringify(jsonPattern, null, 2));
     return 0;
