@@ -23,6 +23,7 @@ h1 {
     color: #49454F;
     min-height: 100vh;
     margin: 0;
+    z-index: 1;
 }
 
 .sidebar {
@@ -30,25 +31,28 @@ h1 {
     background-color: #fff;
     padding: 20px;
     cursor: auto;
+    z-index: 1;
 }
 
 ul {
     margin: 0;
     padding: 0;
     list-style: none;
+    z-index: 1;
 }
 
 .list_element {
     font-weight: bold;
     list-style-type: none;
-    background-color: #fff; /* Green background */
-    color: #49454F;             /* White text */
-    padding: 15px 32px;       /* Some padding */
-    border: none;             /* Remove default border */
-    cursor: pointer;          /* Change cursor to pointer */
+    background-color: #fff;
+    color: #49454F;
+    padding: 15px 32px;
+    border: none;
+    cursor: pointer;
     border-radius: 10px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
     margin-bottom: 10px;
+    z-index: 1;
 }
 
 .main-content {
@@ -67,5 +71,40 @@ ul {
     background-size: 80px 80px;
     margin: 0;
     overflow: hidden;
+    cursor: grab;
+    z-index: 1;
 }
 
+.return-button {
+    position: absolute;
+    top: 20px;  /* 50px сверху */
+    left: 360px; /* 20px слева */
+    font-weight: bold;
+    list-style-type: none;
+    background-color: #fff;
+    color: #49454F;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+    z-index: 1;
+}
+
+.return-button-svg {
+    height: 28px;
+    z-index: 1;
+}
+
+#node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+#center {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
