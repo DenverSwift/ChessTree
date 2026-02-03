@@ -137,7 +137,6 @@ ul {
     height: 28px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
 }
-
 .select-list {
     position: absolute;
     top: 20px;
@@ -157,3 +156,11 @@ ul {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.is-visible {
+    display: block; /* or whatever the natural display type should be */
+}
+
+.is-hidden {
+    display: none;
+    }
