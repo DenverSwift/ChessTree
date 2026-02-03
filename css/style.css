@@ -82,7 +82,7 @@ ul {
 .fab-container {
     position: fixed; /* Fixes the position relative to the viewport */
     bottom: 20px;    /* Distance from the bottom of the screen */
-    left: 20px;     /* Distance from the right of the screen */
+    right: 20px;     /* Distance from the right of the screen */
     display: flex;
     gap: 10px;
 }
