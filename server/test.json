@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "name": "King's Gambit",
+    "createdAt": "2026-02-01 10:30:001",
+    "updatedAt": "2026-02-01 11:15:003"
+  },
+  "nodes": [
+    {
+      "id": "5jhn3xl4ntg",
+      "depth": 1,
+      "move": "e4",
+      "parentId": null,
+      "childrenIds": ["5jhn3xl4ols"]
+    },
+    {
+      "id": "5jhn3xl4ols",
+      "depth": 2,
+      "move": "Nc6",
+      "parentId": "5jhn3xl4ntg",
+      "childrenIds": ["5jhn3xl4pdw", "5jhn3xl4q60"]
+    }
+  ]
+}
