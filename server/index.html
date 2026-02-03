@@ -48,6 +48,8 @@
         bgX = e.clientX - startX;
         bgY = e.clientY - startY;
         grid.style.backgroundPosition = `${bgX}px ${bgY}px`;
+        const contentLayer = document.getElementById('board');
+        contentLayer.style.transform = `translate(${bgX}px, ${bgY}px)`;
     });
 </script>
 </body>
