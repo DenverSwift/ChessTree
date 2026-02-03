@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #grid {
+            width: 100vw;
+            height: 100vh;
+            /* Создание сетки 50x50px */
+            background-image:
+                    linear-gradient(#ccc 1px, transparent 1px),
+                    linear-gradient(90deg, #ccc 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-color: #f9f9f9;
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+<div id="grid"></div>
+<script>
+    const grid = document.getElementById('grid');
+    let isDragging = false;
+    let startX, startY, bgX = 0, bgY = 0;
+
+    grid.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX - bgX;
+        startY = e.clientY - bgY;
+        grid.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        grid.style.cursor = 'grab';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        bgX = e.clientX - startX;
+        bgY = e.clientY - startY;
+        grid.style.backgroundPosition = `${bgX}px ${bgY}px`;
+    });
+</script>
+</body>
+</html>
