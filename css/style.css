@@ -156,11 +156,3 @@ ul {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.is-visible {
-    display: block; /* or whatever the natural display type should be */
-}
-
-.is-hidden {
-    display: none;
-    }
