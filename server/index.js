@@ -1,4 +1,16 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import { createInterface } from 'node:readline/promises';
+
+const readline = createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+async function input(message) {
+    const answer = await readline.question(message);
+    readline.close();
+    return answer;
+}
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -11,7 +23,7 @@ function generateId() {
 function getTime() {
     return new Date()
         .toISOString()
-        .replace(/Z|T/g, (m) => (m === 'T' ? ' ' : ''));
+        .replace(/[ZT]/g, (m) => (m === 'T' ? ' ' : ''));
 }
 // 2026-02-01 07:57:32.528
 // yyyy-mm-dd hh:mm:ss:ms
@@ -81,18 +93,39 @@ function delNode(nameTree, id) {
     fs.writeFileSync(`./${nameTree}.json`, data);
 }
 
-function deleteBranch(nameTree, id) {
+function deleteBranch(nameTree, targetId) {
+    let parsedData = JSON.parse(fs.readFileSync(`./${nameTree}.json`))
 
+    function performDelete(nodes, id) {
+        const node = nodes.find(n => n.id === id);
+        if (!node) return;
+
+        if (node.childrenIds && node.childrenIds.length > 0) {
+            node.childrenIds.forEach(childId => {
+                performDelete(nodes, childId);
+            });
+        }
+
+        const index = nodes.findIndex(n => n.id === id);
+        if (index !== -1) {
+            nodes.splice(index, 1);
+        }
+    }
+
+    performDelete(parsedData.nodes, targetId);
+
+    let data = JSON.stringify(parsedData, null, 2);
+    fs.writeFileSync(`./${nameTree}.json`, data);
 }
 
-function resolveDeleteMethod(nameTree, id) {
+async function resolveDeleteMethod(nameTree, id) {
     let parsedData = JSON.parse(fs.readFileSync(`./${nameTree}.json`))
     const node = parsedData.nodes.find((node) => node.id === id);
 
     if (node.childrenIds.length === 0) {
         delNode(nameTree, id);
     } else {
-        const wipeMode = prompt("removeBranch/resetNode");
+        const wipeMode = await input("removeBranch/resetNode? ")
 
         if (wipeMode === "removeBranch") {
             deleteBranch(nameTree, id);
@@ -101,4 +134,3 @@ function resolveDeleteMethod(nameTree, id) {
         }
     }
 }
-delNode('test', '5jhn3xl4ols')
