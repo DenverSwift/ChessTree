@@ -39,7 +39,7 @@ function createEmptyTree(name) {
         nodes: [
             {
                 id: generateId(),
-                depth: 0,
+                depth: 1,
                 move: null,
                 parentId: null,
                 childrenIds: [],
