@@ -65,5 +65,7 @@ ul {
 
     /* Set the size of each grid cell */
     background-size: 80px 80px;
+    margin: 0;
+    overflow: hidden;
 }
 
