@@ -44,7 +44,7 @@ function returnButton() {
     contentLayer.style.transform = `translate(0px, 0px)`;
 }
 
-// JavaScript - логика
+// New tree dialog button
 const dialog = document.getElementById('nameDialog');
 const form = dialog.querySelector('form');
 const openBtn = document.getElementById('openBtn');
@@ -65,6 +65,14 @@ form.addEventListener('submit', (e) => {
         form.reset();
     }
 });
+
+const newNodeDialog = document.getElementById('newNodeDialog');
+const newNodeBtn = document.getElementById('newNodeBtn');
+const newNodeCancelBtn = document.getElementById('newNodeCancelBtn');
+
+newNodeBtn.addEventListener('click', () => newNodeDialog.showModal());
+
+
 
 function addNewTree(name) {
     const select = document.querySelector('.select-list');

@@ -10,8 +10,10 @@
 <body>
 <div class="container">
     <div id="grid" class="main-content">
-        <div id="node" onclick="log()">
-            <img id="center" src="img/add.svg"/>
+        <div id="node">
+            <div id="newNodeBtn">
+                <img id="center" src="img/add.svg"/>
+            </div>
         </div>
     </div>
 </div>
@@ -32,7 +34,17 @@
         <p><label>Enter tree name: <input type="text" name="name" required></label></p>
         <div>
             <button type="button" id="cancelBtn">Cansel</button> 
-            <button type="submit">OK</button> <!--Вот тут вместо onclick="log()" вписываешь функцию-->
+            <button type="submit">OK</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="newNodeDialog">
+    <form method="dialog">
+        <p><label>Enter node name: <input type="text" name="name" required></label></p>
+        <div>
+            <button type="button" id="newNodeCancelBtn">Cansel</button>
+            <button type="submit">OK</button>
         </div>
     </form>
 </dialog>
