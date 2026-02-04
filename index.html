@@ -10,8 +10,8 @@
 <body>
 <div class="container">
     <div id="grid" class="main-content">
-        <div id="node">
-            <img id="center" src="img/add.svg" onclick="log()"/>
+        <div id="node" onclick="log()">
+            <img id="center" src="img/add.svg"/>
         </div>
     </div>
 </div>
@@ -20,11 +20,7 @@
     <img class="return-button-svg" src="img/target.svg" alt="Go back button"/>
 </button>
 
-<select class="select-list" name="Tree">
-        <option value="1">King's gambit</option>
-        <option value="2">Sicilian defence</option>
-        <option value="3">Italian game</option>
-</select>
+<select class="select-list" name="Tree"></select>
 
 <div class="fab-container">
     <button class="new-tree-button" id="openBtn"><img src="img/add.svg" height="10"/> New Tree</button>
@@ -36,7 +32,7 @@
         <p><label>Enter tree name: <input type="text" name="name" required></label></p>
         <div>
             <button type="button" id="cancelBtn">Cansel</button> 
-            <button type="submit" onclick="log()">OK</button> <!--Вот тут вместо onclick="log()" вписываешь функцию-->
+            <button type="submit">OK</button> <!--Вот тут вместо onclick="log()" вписываешь функцию-->
         </div>
     </form>
 </dialog>
