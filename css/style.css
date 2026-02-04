@@ -4,6 +4,7 @@ body {
     background: #fff;
     color: #49454F;
     font-family: Roboto, sans-serif;
+    overflow: hidden;
 }
 
 h1 {
@@ -16,6 +17,7 @@ h1 {
     color: #49454F;
     min-height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
 
 .sidebar {
@@ -156,4 +158,22 @@ ul {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* CSS - стилизация */
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Затемнение фона */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

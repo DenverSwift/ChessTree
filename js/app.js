@@ -42,3 +42,10 @@ function returnButton() {
     contentLayer.style.transform = `translate(0px, 0px)`;
 }
 
+// JavaScript - логика
+const dialog = document.getElementById('nameDialog');
+const openBtn = document.getElementById('openBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+
+openBtn.addEventListener('click', () => dialog.showModal());
+cancelBtn.addEventListener('click', () => dialog.close());

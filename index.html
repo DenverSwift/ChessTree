@@ -26,9 +26,19 @@
 </select>
 
 <div class="fab-container">
-    <button class="new-tree-button" onclick="log()"><img src="img/add.svg" height="10"/> New Tree</button>
-    <button class="import-tree-button" onclick="log"><img src="img/import.png" height="10"/> Import tree</button>
+    <button class="new-tree-button" id="openBtn"><img src="img/add.svg" height="10"/> New Tree</button>
+    <button class="import-tree-button" onclick="log()"><img src="img/import.png" height="10"/> Import tree</button>
 </div>
+
+<dialog id="nameDialog">
+    <form method="dialog">
+        <p><label>Введите название: <input type="text" name="name" required></label></p>
+        <div>
+            <button type="button" id="cancelBtn">Отмена</button>
+            <button type="submit">ОК</button>
+        </div>
+    </form>
+</dialog>
 
 <!--<aside class="sidebar">-->
 <!--    <h1>ChessTree</h1>-->
