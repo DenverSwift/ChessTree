@@ -16,8 +16,8 @@
     </div>
 </div>
 
-<button class="return-button">
-    <img class="return-button-svg" src="img/target.svg" alt="Go back button" onclick="returnButton()"/>
+<button class="return-button" onclick="returnButton()">
+    <img class="return-button-svg" src="img/target.svg" alt="Go back button"/>
 </button>
 
 <select class="select-list" name="Tree">
@@ -33,22 +33,13 @@
 
 <dialog id="nameDialog">
     <form method="dialog">
-        <p><label>Введите название: <input type="text" name="name" required></label></p>
+        <p><label>Enter tree name: <input type="text" name="name" required></label></p>
         <div>
-            <button type="button" id="cancelBtn">Отмена</button>
-            <button type="submit">ОК</button>
+            <button type="button" id="cancelBtn">Cansel</button> 
+            <button type="submit" onclick="log()">OK</button> <!--Вот тут вместо onclick="log()" вписываешь функцию-->
         </div>
     </form>
 </dialog>
-
-<!--<aside class="sidebar">-->
-<!--    <h1>ChessTree</h1>-->
-<!--    <ul>-->
-<!--        <li class="list_element" onclick="log()">King's gambit</li>-->
-<!--        <li class="list_element" onclick="log()">Sicilian defence</li>-->
-<!--        <li class="list_element" onclick="log()">Italian game</li>-->
-<!--    </ul>-->
-<!--</aside>-->
 
 <script src="js/app.js"></script>
 </body>

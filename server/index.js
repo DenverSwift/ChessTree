@@ -85,7 +85,7 @@ function delNode(nameTree, id) {
     fs.writeFileSync(`./${nameTree}.json`, data);
 }
 
-function deleteBranch(nameTree, targetId) {
+function deleteBranch(nameTree, targetId) { //удаление ветки
     let parsedData = JSON.parse(fs.readFileSync(`./${nameTree}.json`))
 
     function performDelete(nodes, id) {
