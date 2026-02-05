@@ -32,7 +32,7 @@ window.addEventListener('mousemove', (e) => {
     bgX = e.clientX - startX;
     bgY = e.clientY - startY;
     grid.style.backgroundPosition = `${bgX}px ${bgY}px`;
-    const contentLayer = document.getElementById('node');
+    const contentLayer = document.getElementById('nodes');
     contentLayer.style.transform = `translate(${bgX}px, ${bgY}px)`;
 });
 
@@ -40,18 +40,19 @@ function returnButton() {
     bgX = 0;
     bgY = 0;
     grid.style.backgroundPosition = '0px 0px';
-    const contentLayer = document.getElementById('node');
+    const contentLayer = document.getElementById('nodes');
     contentLayer.style.transform = `translate(0px, 0px)`;
 }
 
 // New tree dialog button
 const dialog = document.getElementById('nameDialog');
-const form = dialog.querySelector('form');
 const openBtn = document.getElementById('openBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 
 openBtn.addEventListener('click', () => dialog.showModal());
 cancelBtn.addEventListener('click', () => dialog.close());
+
+const form = dialog.querySelector('form');
 
 form.addEventListener('submit', (e) => {
     const formData = new FormData(form);
@@ -136,3 +137,5 @@ function loadTreesToList() {
         }
     }
 }
+
+function
