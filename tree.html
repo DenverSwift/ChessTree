@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChessTree</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" href="img/old-logo.png" type="image/png">
+</head>
+<body>
+<div class="container">
+    <div id="grid" class="main-content">
+        <div id="nodes" onclick="log()">
+            <img id="add-node-button" src="img/add.svg"/>
+            <h1 class="object">C6</h1>
+        </div>
+    </div>
+</div>
+
+<button class="return-button" onclick="returnButton()">
+    <img class="return-button-svg" src="img/target.svg" alt="Go back button"/>
+</button>
+
+<select class="select-list" name="Tree"></select>
+
+<div class="fab-container">
+    <button class="new-tree-button" id="openBtn"><img src="img/add.svg" height="10"/> New Tree</button>
+    <button class="import-tree-button" onclick="log()"><img src="img/import.png" height="10"/> Import tree</button>
+</div>
+
+<dialog id="nameDialog">
+    <form method="dialog">
+        <p><label>Enter tree name: <input type="text" name="name" required></label></p>
+        <div>
+            <button type="button" id="cancelBtn">Cansel</button> 
+            <button type="submit">OK</button> 
+        </div>
+    </form>
+</dialog>
+
+<script src="js/app.js"></script>
+</body>
+</html>

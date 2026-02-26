@@ -71,8 +71,10 @@ const newNodeDialog = document.getElementById('newNodeDialog');
 const newNodeBtn = document.getElementById('newNodeBtn');
 const newNodeCancelBtn = document.getElementById('newNodeCancelBtn');
 
-newNodeBtn.addEventListener('click', () => newNodeDialog.showModal());
-newNodeCancelBtn.addEventListener('click', () => newNodeDialog.close());
+if (newNodeDialog && newNodeBtn && newNodeCancelBtn) {
+    newNodeBtn.addEventListener('click', () => newNodeDialog.showModal());
+    newNodeCancelBtn.addEventListener('click', () => newNodeDialog.close());
+}
 
 
 
@@ -137,5 +139,3 @@ function loadTreesToList() {
         }
     }
 }
-
-function

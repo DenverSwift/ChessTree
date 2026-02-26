@@ -4,40 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ChessTree</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="icon" href="img/old-logo.png" type="image/png">
+    <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
-<div class="container">
-    <div id="grid" class="main-content">
-        <div id="nodes" onclick="log()">
-            <img id="add-node-button" src="img/add.svg"/>
-            <h1 class="object">C6</h1>
-        </div>
-    </div>
-</div>
+<canvas id="bg-network" aria-hidden="true"></canvas>
 
-<button class="return-button" onclick="returnButton()">
-    <img class="return-button-svg" src="img/target.svg" alt="Go back button"/>
-</button>
+<header class="topbar">
+    <a href="#contact" class="nav-link">Contact us</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#news" class="nav-link">News</a>
+    <a href="library.html" class="nav-link">Library</a>
+    <a href="#settings" class="nav-link">Settings</a>
+    <button id="accountBtn" class="account-btn" type="button">Log in / Register</button>
+</header>
 
-<select class="select-list" name="Tree"></select>
+<main class="hero">
+    <h1 id="heroText" class="hero-text">Explore new openings</h1>
 
-<div class="fab-container">
-    <button class="new-tree-button" id="openBtn"><img src="img/add.svg" height="10"/> New Tree</button>
-    <button class="import-tree-button" onclick="log()"><img src="img/import.png" height="10"/> Import tree</button>
-</div>
-
-<dialog id="nameDialog">
-    <form method="dialog">
-        <p><label>Enter tree name: <input type="text" name="name" required></label></p>
-        <div>
-            <button type="button" id="cancelBtn">Cansel</button> 
-            <button type="submit">OK</button> 
-        </div>
+    <form id="searchForm" class="search-wrap" action="library.html" method="get" autocomplete="off">
+        <label for="openingSearch" class="sr-only">Search for an opening</label>
+        <input id="openingSearch" type="text" placeholder="Search for an opening..." aria-expanded="false" aria-controls="openingList" />
+        <button id="searchGo" type="submit" aria-label="Go to library">&#10132;</button>
+        <ul id="openingList" class="opening-list" role="listbox"></ul>
     </form>
-</dialog>
+</main>
 
-<script src="js/app.js"></script>
+<script src="js/home.js"></script>
 </body>
 </html>
