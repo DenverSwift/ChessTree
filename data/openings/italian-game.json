@@ -1,0 +1,15 @@
+{
+  "id": "italian-game",
+  "name": "Italian Game",
+  "tagline": "Rapid development and tactical themes.",
+  "description": "A classical open game focused on quick development, central pressure, and clear attacking motifs for White.",
+  "side": "white",
+  "difficulty": 2,
+  "difficultyLabel": "Beginner",
+  "style": "Positional",
+  "openingType": "King Pawn",
+  "variationCount": 8,
+  "popularity": 5,
+  "recommended": true,
+  "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 2 3"
+}

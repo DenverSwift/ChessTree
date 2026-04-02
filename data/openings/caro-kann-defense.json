@@ -1,0 +1,15 @@
+{
+  "id": "caro-kann-defense",
+  "name": "Caro-Kann Defense",
+  "tagline": "Solid and reliable response.",
+  "description": "A resilient response to 1.e4 where Black builds a durable structure and seeks counterplay without early tactical chaos.",
+  "side": "black",
+  "difficulty": 2,
+  "difficultyLabel": "Beginner",
+  "style": "Solid",
+  "openingType": "King Pawn",
+  "variationCount": 8,
+  "popularity": 4,
+  "recommended": true,
+  "fen": "rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "scandinavian-defense",
+  "name": "Scandinavian Defense",
+  "tagline": "Immediate central challenge.",
+  "description": "Black challenges White's center right away with an early ...d5, steering the game into active and practical lines.",
+  "side": "black",
+  "difficulty": 2,
+  "difficultyLabel": "Beginner",
+  "style": "Tactical",
+  "openingType": "King Pawn",
+  "variationCount": 6,
+  "popularity": 3,
+  "recommended": false,
+  "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+}

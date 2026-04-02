@@ -1,0 +1,15 @@
+{
+  "id": "french-defense",
+  "name": "French Defense",
+  "tagline": "Counterattack the center with e6.",
+  "description": "Black challenges White's center with a compact pawn chain and aims for strategic counterplay on both wings.",
+  "side": "black",
+  "difficulty": 3,
+  "difficultyLabel": "Intermediate",
+  "style": "Solid",
+  "openingType": "King Pawn",
+  "variationCount": 10,
+  "popularity": 4,
+  "recommended": false,
+  "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+}

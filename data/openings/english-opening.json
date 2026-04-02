@@ -1,0 +1,15 @@
+{
+  "id": "english-opening",
+  "name": "English Opening",
+  "tagline": "Flexible setup with c4.",
+  "description": "White develops from the flank, controlling key central squares and keeping plans flexible between positional pressure and transpositions.",
+  "side": "white",
+  "difficulty": 3,
+  "difficultyLabel": "Intermediate",
+  "style": "Positional",
+  "openingType": "Flank Opening",
+  "variationCount": 9,
+  "popularity": 4,
+  "recommended": true,
+  "fen": "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1"
+}

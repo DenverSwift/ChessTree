@@ -1,0 +1,15 @@
+{
+  "id": "alekhine-defense",
+  "name": "Alekhine Defense",
+  "tagline": "Dynamic defense against 1.e4.",
+  "description": "Black invites White to overextend the center early and then attacks that pawn chain with piece pressure and timely breaks.",
+  "side": "black",
+  "difficulty": 4,
+  "difficultyLabel": "Intermediate",
+  "style": "Counterattacking",
+  "openingType": "King Pawn",
+  "variationCount": 9,
+  "popularity": 3,
+  "recommended": false,
+  "fen": "rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2"
+}

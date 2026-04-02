@@ -1,0 +1,15 @@
+{
+  "id": "nimzo-indian-defense",
+  "name": "Nimzo-Indian Defense",
+  "tagline": "Control dark squares and structure.",
+  "description": "Black develops actively, fights for dark-square control, and often inflicts structural weaknesses for long-term play.",
+  "side": "black",
+  "difficulty": 4,
+  "difficultyLabel": "Intermediate",
+  "style": "Positional",
+  "openingType": "Queen Pawn",
+  "variationCount": 11,
+  "popularity": 4,
+  "recommended": true,
+  "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bP5/2N5/PP1PPPPP/R1BQKBNR w KQkq - 4 4"
+}

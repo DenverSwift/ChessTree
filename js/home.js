@@ -19,7 +19,15 @@ const SLOGANS = [
     "Explore new openings",
     "Try new gambit",
     "Learn, play, enjoy!",
-    "Find your favourite way to play"
+    "Find your favourite way to play",
+    "Sharpen your opening instincts",
+    "Build lines that make sense",
+    "Train smarter, move faster",
+    "From first move to clear plan",
+    "Discover ideas behind each opening",
+    "Grow your chess confidence daily",
+    "Master patterns, not just moves",
+    "Create your own opening roadmap"
 ];
 
 const heroText = document.getElementById("heroText");
@@ -30,11 +38,41 @@ const list = document.getElementById("openingList");
 let activeSuggestions = [];
 let activeIndex = -1;
 
-heroText.textContent = SLOGANS[Math.floor(Math.random() * SLOGANS.length)];
+function pickSlogan() {
+    if (!SLOGANS.length) return "";
+    if (SLOGANS.length === 1) return SLOGANS[0];
 
-accountBtn.addEventListener("click", () => {
-    accountBtn.textContent = "Account";
-});
+    const storageKey = "home_last_slogan_index";
+    let lastIndex = -1;
+
+    try {
+        lastIndex = Number.parseInt(localStorage.getItem(storageKey), 10);
+    } catch (_error) {
+        lastIndex = -1;
+    }
+
+    let nextIndex = Math.floor(Math.random() * SLOGANS.length);
+
+    if (!Number.isNaN(lastIndex) && lastIndex >= 0 && lastIndex < SLOGANS.length && nextIndex === lastIndex) {
+        nextIndex = (lastIndex + 1 + Math.floor(Math.random() * (SLOGANS.length - 1))) % SLOGANS.length;
+    }
+
+    try {
+        localStorage.setItem(storageKey, String(nextIndex));
+    } catch (_error) {
+        // Ignore storage errors (private mode or blocked storage).
+    }
+
+    return SLOGANS[nextIndex];
+}
+
+heroText.textContent = pickSlogan();
+
+if (accountBtn) {
+    accountBtn.addEventListener("click", () => {
+        accountBtn.textContent = "Account";
+    });
+}
 
 function slugify(value) {
     return value
@@ -42,6 +80,14 @@ function slugify(value) {
         .replace(/[^a-z0-9\s-]/g, "")
         .trim()
         .replace(/\s+/g, "-");
+}
+
+function navigateTo(url) {
+    if (typeof window.navigateWithTransition === "function") {
+        window.navigateWithTransition(url);
+        return;
+    }
+    window.location.href = url;
 }
 
 function scoreMatch(query, opening) {
@@ -83,14 +129,15 @@ function positionListWithinViewport() {
     list.classList.remove("drop-up");
     list.style.maxHeight = "";
 
-    const viewportMargin = 12;
+    const viewportMargin = 24;
+    const listGap = 12;
     const searchRect = form.getBoundingClientRect();
     const spaceBelow = window.innerHeight - searchRect.bottom - viewportMargin;
     const spaceAbove = searchRect.top - viewportMargin;
 
     const targetHeight = Math.min(300, window.innerHeight * 0.42);
-    const belowHeight = Math.max(0, Math.min(targetHeight, spaceBelow - 8));
-    const aboveHeight = Math.max(0, Math.min(targetHeight, spaceAbove - 8));
+    const belowHeight = Math.max(0, Math.min(targetHeight, spaceBelow - listGap));
+    const aboveHeight = Math.max(0, Math.min(targetHeight, spaceAbove - listGap));
 
     if (belowHeight < 120 && aboveHeight > belowHeight) {
         list.classList.add("drop-up");
@@ -118,7 +165,7 @@ function renderList(matches) {
             btn.className = "opening-option";
             btn.textContent = opening;
             btn.addEventListener("click", () => {
-                window.location.href = `library.html#${slugify(opening)}`;
+                navigateTo(`library.html#${slugify(opening)}`);
             });
             li.appendChild(btn);
             list.appendChild(li);
@@ -139,7 +186,7 @@ function hideList() {
 function routeFromInput() {
     const matches = getMatches(input.value);
     const destination = matches.length ? `library.html#${slugify(matches[0])}` : "library.html";
-    window.location.href = destination;
+    navigateTo(destination);
 }
 
 input.addEventListener("focus", () => {
@@ -174,7 +221,7 @@ input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         event.preventDefault();
         if (activeSuggestions.length && activeIndex >= 0) {
-            window.location.href = `library.html#${slugify(activeSuggestions[activeIndex])}`;
+            navigateTo(`library.html#${slugify(activeSuggestions[activeIndex])}`);
             return;
         }
         routeFromInput();
@@ -202,39 +249,105 @@ let dpr = 1;
 let width = 0;
 let height = 0;
 let clusters = [];
+let networkRGB = "255, 255, 255";
+
+function updateNetworkPalette() {
+    const rootStyles = getComputedStyle(document.documentElement);
+    const rgb = rootStyles.getPropertyValue("--network-rgb").trim();
+    networkRGB = rgb || "255, 255, 255";
+}
 
 function randomIn(min, max) {
     return min + Math.random() * (max - min);
+}
+
+function shuffle(items) {
+    const arr = [...items];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function createEdges(pointCount, closed) {
+    const order = shuffle(Array.from({ length: pointCount }, (_, i) => i));
+    const used = new Set();
+    const edges = [];
+
+    function addEdge(a, b) {
+        if (a === b) return false;
+        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+        if (used.has(key)) return false;
+        used.add(key);
+        edges.push([a, b]);
+        return true;
+    }
+
+    for (let i = 0; i < order.length - 1; i++) {
+        addEdge(order[i], order[i + 1]);
+    }
+
+    if (closed) {
+        addEdge(order[order.length - 1], order[0]);
+    }
+
+    const extraEdges = closed ? Math.ceil(pointCount * 0.8) : Math.ceil(pointCount * 0.5);
+    const first = order[0];
+    const last = order[order.length - 1];
+    let attempts = 0;
+    while (attempts < 80 && edges.length < (pointCount - 1 + (closed ? 1 : 0) + extraEdges)) {
+        const a = order[Math.floor(Math.random() * order.length)];
+        const b = order[Math.floor(Math.random() * order.length)];
+        if (!closed && ((a === first && b === last) || (a === last && b === first))) {
+            attempts++;
+            continue;
+        }
+        addEdge(a, b);
+        attempts++;
+    }
+
+    return edges;
 }
 
 function buildClusters() {
     clusters = [];
     const area = width * height;
     const clusterCount = Math.max(18, Math.floor(area / 57500));
+    const closeFlags = shuffle([
+        ...Array.from({ length: Math.floor(clusterCount / 2) }, () => true),
+        ...Array.from({ length: clusterCount - Math.floor(clusterCount / 2) }, () => false)
+    ]);
 
     for (let i = 0; i < clusterCount; i++) {
-        const pointCount = 3 + Math.floor(Math.random() * 3);
-        const radius = randomIn(34, 58);
+        const pointCount = 3 + Math.floor(Math.random() * 5);
+        const radius = randomIn(36, 64);
+        const closed = closeFlags[i];
         const cluster = {
             cx: randomIn(40, Math.max(41, width - 40)),
             cy: randomIn(40, Math.max(41, height - 40)),
             driftX: randomIn(-0.18, 0.18),
             driftY: randomIn(-0.18, 0.18),
             radius,
-            points: []
+            closed,
+            points: [],
+            edges: []
         };
 
         for (let j = 0; j < pointCount; j++) {
             cluster.points.push({
-                angle: (Math.PI * 2 * j) / pointCount + randomIn(-0.2, 0.2),
-                distance: radius * randomIn(0.55, 1),
+                angle: randomIn(0, Math.PI * 2),
+                angularDrift: randomIn(-0.0025, 0.0025),
+                distance: radius * randomIn(0.4, 1.1),
                 phase: randomIn(0, Math.PI * 2),
                 speed: randomIn(0.003, 0.008),
                 offsetX: 0,
-                offsetY: 0
+                offsetY: 0,
+                glow: 0
             });
         }
 
+        cluster.edges = createEdges(pointCount, closed);
         clusters.push(cluster);
     }
 }
@@ -255,6 +368,8 @@ function resizeCanvas() {
 
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
+updateNetworkPalette();
+document.addEventListener("themechange", updateNetworkPalette);
 
 window.addEventListener("mousemove", (event) => {
     pointer.x = event.clientX;
@@ -280,6 +395,7 @@ function animate() {
 
         for (const point of cluster.points) {
             point.phase += point.speed;
+            point.angle += point.angularDrift;
             const wobble = Math.sin(point.phase) * 4;
 
             const baseX = cluster.cx + Math.cos(point.angle) * (point.distance + wobble);
@@ -290,35 +406,41 @@ function animate() {
             const dist = Math.hypot(dx, dy);
             let targetOffsetX = 0;
             let targetOffsetY = 0;
+            let targetGlow = 0;
             if (dist < 110 && dist > 0.001) {
                 const strength = (1 - dist / 110) * 8;
                 targetOffsetX = (dx / dist) * strength;
                 targetOffsetY = (dy / dist) * strength;
             }
+            if (dist < 150) {
+                targetGlow = 1 - dist / 150;
+            }
 
             point.offsetX += (targetOffsetX - point.offsetX) * 0.08;
             point.offsetY += (targetOffsetY - point.offsetY) * 0.08;
+            point.glow += (targetGlow - point.glow) * 0.07;
 
             const x = baseX + point.offsetX;
             const y = baseY + point.offsetY;
-            rendered.push({ x, y });
+            rendered.push({ x, y, glow: point.glow });
         }
 
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(10, 10, 10, 0.2)";
-        ctx.lineWidth = 1;
-        for (let i = 0; i < rendered.length; i++) {
-            const a = rendered[i];
-            const b = rendered[(i + 1) % rendered.length];
+        for (const [aIdx, bIdx] of cluster.edges) {
+            const a = rendered[aIdx];
+            const b = rendered[bIdx];
+            const lineGlow = (a.glow + b.glow) / 2;
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(${networkRGB}, ${0.2 + lineGlow * 0.45})`;
+            ctx.lineWidth = 1 + lineGlow * 0.9;
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
+            ctx.stroke();
         }
-        ctx.stroke();
 
         for (const p of rendered) {
             ctx.beginPath();
-            ctx.fillStyle = "rgba(15, 15, 15, 0.72)";
-            ctx.arc(p.x, p.y, 1.9, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${networkRGB}, ${0.72 + p.glow * 0.25})`;
+            ctx.arc(p.x, p.y, 1.9 + p.glow * 1.3, 0, Math.PI * 2);
             ctx.fill();
         }
     }

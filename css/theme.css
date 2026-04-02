@@ -1,0 +1,196 @@
+:root {
+    color-scheme: dark;
+    --bg: #121212;
+    --fg: #FFFFFF;
+    --fg-rgb: 255, 255, 255;
+    --soft: #A0A0A0;
+    --line: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.08);
+    --surface: #1E1E1E;
+    --surface-rgb: 30, 30, 30;
+    --panel: #1E1E1E;
+    --elevated: #252525;
+    --card: #252525;
+    --accent: #22C55E;
+    --accent-soft: rgba(34, 197, 94, 0.18);
+    --hover-overlay: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(255, 255, 255, 0.12);
+    --button-text: #FFFFFF;
+    --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.32);
+    --shadow-strong: 0 14px 30px rgba(0, 0, 0, 0.42);
+    --board-light: #EFEFEF;
+    --board-dark: #A7A7A7;
+    --network-rgb: 255, 255, 255;
+    --switcher-shell-bg: rgba(58, 58, 58, 0.94);
+    --switcher-shell-border: rgba(255, 255, 255, 0.14);
+    --switcher-tile-bg: rgba(255, 255, 255, 0.06);
+    --switcher-tile-hover: rgba(255, 255, 255, 0.11);
+    --switcher-tile-active: rgba(34, 197, 94, 0.2);
+    --toolbar-link-muted: #D1D5DB;
+    --toolbar-active-bg: rgba(255, 255, 255, 0.04);
+    --toolbar-active-inset: rgba(255, 255, 255, 0.03);
+    --toolbar-glow: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.18) 55%, rgba(34, 197, 94, 0.55) 100%);
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #F3F6F2;
+    --fg: #111111;
+    --fg-rgb: 17, 17, 17;
+    --soft: #5F6B63;
+    --line: rgba(17, 17, 17, 0.08);
+    --border: rgba(17, 17, 17, 0.08);
+    --surface: #FFFFFF;
+    --surface-rgb: 255, 255, 255;
+    --panel: #FFFFFF;
+    --elevated: #EEF4EE;
+    --card: #EEF4EE;
+    --accent: #22C55E;
+    --accent-soft: #DDF5E6;
+    --hover-overlay: rgba(17, 17, 17, 0.04);
+    --input-border: rgba(17, 17, 17, 0.12);
+    --button-text: #111111;
+    --shadow-soft: 0 10px 22px rgba(19, 39, 24, 0.09);
+    --shadow-strong: 0 14px 28px rgba(19, 39, 24, 0.14);
+    --board-light: #F1F1F1;
+    --board-dark: #B6B6B6;
+    --network-rgb: 17, 17, 17;
+    --switcher-shell-bg: rgba(236, 238, 235, 0.96);
+    --switcher-shell-border: rgba(17, 17, 17, 0.14);
+    --switcher-tile-bg: rgba(17, 17, 17, 0.05);
+    --switcher-tile-hover: rgba(17, 17, 17, 0.08);
+    --switcher-tile-active: #DDF5E6;
+    --toolbar-link-muted: #4B5563;
+    --toolbar-active-bg: rgba(17, 17, 17, 0.04);
+    --toolbar-active-inset: rgba(255, 255, 255, 0.45);
+    --toolbar-glow: linear-gradient(90deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0.16) 55%, rgba(34, 197, 94, 0.45) 100%);
+}
+
+.theme-switcher {
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    z-index: 60;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid var(--switcher-shell-border);
+    background: var(--switcher-shell-bg);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+    overflow: hidden;
+    transition: width 210ms ease, background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.theme-switcher.is-expanded {
+    width: 104px;
+}
+
+.theme-switcher__toggle,
+.theme-switcher__option {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--fg);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 200ms ease, border-color 200ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.theme-switcher__toggle {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.theme-switcher__toggle:hover,
+.theme-switcher__option:hover {
+    background: transparent;
+}
+
+.theme-switcher__toggle:focus-visible,
+.theme-switcher__option:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.45);
+}
+
+.theme-switcher__piece {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 180ms ease, transform 180ms ease, filter 180ms ease;
+}
+
+.theme-switcher__piece--toggle {
+    width: 31px;
+    height: 31px;
+}
+
+.theme-switcher__options {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.theme-switcher.is-expanded .theme-switcher__options {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+.theme-switcher__option {
+    opacity: 0;
+    transform: translateX(-8px) scale(0.97);
+}
+
+.theme-switcher.is-expanded .theme-switcher__option {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+.theme-switcher.is-expanded .theme-switcher__option .theme-switcher__piece {
+    opacity: 1;
+    filter: saturate(1);
+}
+
+.toolbar-tooltip {
+    position: fixed;
+    z-index: 120;
+    padding: 6px 9px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: rgba(var(--surface-rgb), 0.98);
+    color: var(--fg);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 600;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 800px) {
+    .theme-switcher {
+        bottom: 9px;
+        left: 9px;
+    }
+}

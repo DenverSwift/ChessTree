@@ -1,0 +1,15 @@
+{
+  "id": "bird-opening",
+  "name": "Bird Opening",
+  "tagline": "Uncommon flank start with f4.",
+  "description": "White claims kingside space from move one and often steers the game into strategic middlegames with attacking chances.",
+  "side": "white",
+  "difficulty": 3,
+  "difficultyLabel": "Intermediate",
+  "style": "Flank",
+  "openingType": "Flank Opening",
+  "variationCount": 7,
+  "popularity": 2,
+  "recommended": false,
+  "fen": "rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "queens-gambit",
+  "name": "Queen's Gambit",
+  "tagline": "Strategic central pressure.",
+  "description": "White fights for central dominance and long-term initiative, usually leading to rich strategic middlegames.",
+  "side": "white",
+  "difficulty": 2,
+  "difficultyLabel": "Beginner",
+  "style": "Positional",
+  "openingType": "Queen Pawn",
+  "variationCount": 9,
+  "popularity": 5,
+  "recommended": true,
+  "fen": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2"
+}

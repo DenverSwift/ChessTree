@@ -1,0 +1,72 @@
+{
+  "alekhine-defense": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1200,
+    "recommendedEloMax": 2100
+  },
+  "bird-opening": {
+    "firstMoveType": "flank",
+    "recommendedEloMin": 1100,
+    "recommendedEloMax": 2000
+  },
+  "caro-kann-defense": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 600,
+    "recommendedEloMax": 1800
+  },
+  "english-opening": {
+    "firstMoveType": "flank",
+    "recommendedEloMin": 900,
+    "recommendedEloMax": 2200
+  },
+  "evans-gambit": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1500,
+    "recommendedEloMax": 2400
+  },
+  "french-defense": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1000,
+    "recommendedEloMax": 2100
+  },
+  "italian-game": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 300,
+    "recommendedEloMax": 1700
+  },
+  "kings-gambit": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1400,
+    "recommendedEloMax": 2300
+  },
+  "nimzo-indian-defense": {
+    "firstMoveType": "queen-pawn",
+    "recommendedEloMin": 1400,
+    "recommendedEloMax": 2400
+  },
+  "pirc-defense": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1200,
+    "recommendedEloMax": 2300
+  },
+  "queens-gambit": {
+    "firstMoveType": "queen-pawn",
+    "recommendedEloMin": 400,
+    "recommendedEloMax": 1900
+  },
+  "ruy-lopez": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1300,
+    "recommendedEloMax": 2400
+  },
+  "scandinavian-defense": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 500,
+    "recommendedEloMax": 1600
+  },
+  "sicilian-defense": {
+    "firstMoveType": "king-pawn",
+    "recommendedEloMin": 1400,
+    "recommendedEloMax": 2400
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "pirc-defense",
+  "name": "Pirc Defense",
+  "tagline": "Hypermodern defense with flexible center.",
+  "description": "Black allows White to occupy the center first, then counters with piece pressure and pawn breaks from a flexible setup.",
+  "side": "black",
+  "difficulty": 4,
+  "difficultyLabel": "Intermediate",
+  "style": "Hypermodern",
+  "openingType": "King Pawn",
+  "variationCount": 8,
+  "popularity": 3,
+  "recommended": false,
+  "fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4"
+}

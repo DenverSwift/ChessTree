@@ -1,0 +1,15 @@
+{
+  "id": "evans-gambit",
+  "name": "Evans Gambit",
+  "tagline": "Classic attacking gambit in the Italian.",
+  "description": "White sacrifices a wing pawn for rapid development and direct initiative against Black's king in open tactical positions.",
+  "side": "white",
+  "difficulty": 5,
+  "difficultyLabel": "Advanced",
+  "style": "Aggressive",
+  "openingType": "King Pawn",
+  "variationCount": 6,
+  "popularity": 2,
+  "recommended": false,
+  "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/1P2P3/5N2/P1PP1PPP/RNBQKB1R b KQkq - 0 4"
+}

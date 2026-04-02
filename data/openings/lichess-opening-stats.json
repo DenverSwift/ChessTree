@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "sourceName": "Lichess Opening Explorer",
+    "sourceUrl": "https://explorer.lichess.org",
+    "generatedAt": "",
+    "since": "",
+    "speeds": "blitz,rapid,classical",
+    "ratingBuckets": [
+      100,
+      400,
+      700,
+      1000,
+      1300,
+      1600,
+      1900,
+      2200,
+      2500
+    ]
+  },
+  "openings": {}
+}

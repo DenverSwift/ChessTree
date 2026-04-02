@@ -1,0 +1,15 @@
+{
+  "id": "kings-gambit",
+  "name": "King's Gambit",
+  "tagline": "Sharp initiative play from move two.",
+  "description": "White offers a pawn to open lines immediately and create dangerous attacking chances before Black consolidates.",
+  "side": "white",
+  "difficulty": 5,
+  "difficultyLabel": "Advanced",
+  "style": "Aggressive",
+  "openingType": "King Pawn",
+  "variationCount": 7,
+  "popularity": 3,
+  "recommended": false,
+  "fen": "rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2"
+}

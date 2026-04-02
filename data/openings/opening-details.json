@@ -1,0 +1,450 @@
+{
+  "alekhine-defense": {
+    "eco": "B02",
+    "keyIdeas": [
+      "Provoke White's center to advance and become a target.",
+      "Challenge central pawns with timely pawn breaks.",
+      "Develop pieces flexibly before committing to a fixed structure."
+    ],
+    "mainLineMoves": "1. e4 Nf6 2. e5 Nd5 3. d4 d6",
+    "variations": [
+      {
+        "id": "modern-variation",
+        "name": "Modern Variation",
+        "moves": "1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3",
+        "description": "White keeps central space while Black aims for dynamic counterplay.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "four-pawns-attack",
+        "name": "Four Pawns Attack",
+        "moves": "1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. c4 Nb6 5. f4",
+        "description": "A sharp setup where White grabs space and Black strikes back tactically.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "exchange-line",
+        "name": "Exchange Line",
+        "moves": "1. e4 Nf6 2. e5 Nd5 3. c4 Nb6 4. d4 d6",
+        "description": "A practical line with clear plans and manageable structures.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  },
+  "bird-opening": {
+    "eco": "A02",
+    "keyIdeas": [
+      "Control e5 with an early f-pawn advance.",
+      "Build kingside initiative while watching king safety.",
+      "Use flexible move orders to transpose into favorable setups."
+    ],
+    "mainLineMoves": "1. f4 d5 2. Nf3 g6 3. e3 Bg7",
+    "variations": [
+      {
+        "id": "from-gambit",
+        "name": "From Gambit",
+        "moves": "1. f4 e5 2. fxe5 d6 3. exd6 Bxd6",
+        "description": "Black sacrifices a pawn for activity and development lead.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "classical-setup",
+        "name": "Classical Setup",
+        "moves": "1. f4 d5 2. Nf3 Nf6 3. e3 e6",
+        "description": "A balanced structure with straightforward strategic ideas.",
+        "difficulty": "Beginner"
+      },
+      {
+        "id": "leningrad-style",
+        "name": "Leningrad Style",
+        "moves": "1. f4 d5 2. Nf3 g6 3. g3 Bg7",
+        "description": "Fianchetto development gives White long-term kingside pressure.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  },
+  "caro-kann-defense": {
+    "eco": "B10",
+    "keyIdeas": [
+      "Build a durable pawn structure with ...c6 and ...d5.",
+      "Solve the light-square bishop before locking the center.",
+      "Aim for endgames where structure quality matters."
+    ],
+    "mainLineMoves": "1. e4 c6 2. d4 d5 3. Nc3 dxe4",
+    "variations": [
+      {
+        "id": "classical-variation",
+        "name": "Classical Variation",
+        "moves": "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5",
+        "description": "The main strategic branch with healthy structure and active pieces.",
+        "difficulty": "Beginner"
+      },
+      {
+        "id": "advance-variation",
+        "name": "Advance Variation",
+        "moves": "1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nc3 e6",
+        "description": "White gains space while Black attacks the pawn chain base.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "panov-attack",
+        "name": "Panov Attack",
+        "moves": "1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4",
+        "description": "An isolated-queen-pawn structure creates active piece play.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  },
+  "english-opening": {
+    "eco": "A10",
+    "keyIdeas": [
+      "Use flank pressure to influence central squares.",
+      "Keep transposition options into Queen's Pawn and Sicilian structures.",
+      "Build long-term space on the queenside."
+    ],
+    "mainLineMoves": "1. c4 e5 2. Nc3 Nf6 3. g3 d5",
+    "variations": [
+      {
+        "id": "symmetrical-english",
+        "name": "Symmetrical English",
+        "moves": "1. c4 c5 2. Nc3 Nc6 3. g3 g6",
+        "description": "Both sides mirror plans and timing becomes critical.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "reversed-sicilian",
+        "name": "Reversed Sicilian",
+        "moves": "1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6",
+        "description": "White plays a Sicilian-like setup with an extra tempo.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "four-knights",
+        "name": "Four Knights",
+        "moves": "1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6 4. g3",
+        "description": "A flexible line with controlled development and fewer early risks.",
+        "difficulty": "Beginner"
+      }
+    ]
+  },
+  "evans-gambit": {
+    "eco": "C51",
+    "keyIdeas": [
+      "Sacrifice the b-pawn for rapid development and initiative.",
+      "Open lines against f7 and the black king.",
+      "Maintain tempo and avoid slow regrouping."
+    ],
+    "mainLineMoves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4",
+    "variations": [
+      {
+        "id": "accepted-main-line",
+        "name": "Accepted Main Line",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4 Bxb4 5. c3",
+        "description": "White uses the pawn sacrifice to seize initiative and open diagonals.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "lasker-defense",
+        "name": "Lasker Defense",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4 Bxb4 5. c3 Ba5 6. d4 d6",
+        "description": "Black returns material at the right moment to blunt White's attack.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "declined-line",
+        "name": "Declined Line",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4 Bb6",
+        "description": "A practical way to avoid deep tactical theory.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  },
+  "french-defense": {
+    "eco": "C00",
+    "keyIdeas": [
+      "Build the e6-d5 chain and attack White's center base.",
+      "Time the ...c5 break to challenge space advantage.",
+      "Coordinate pieces around structural tension."
+    ],
+    "mainLineMoves": "1. e4 e6 2. d4 d5",
+    "variations": [
+      {
+        "id": "advance-variation",
+        "name": "Advance Variation",
+        "moves": "1. e4 e6 2. d4 d5 3. e5 c5 4. c3 Nc6",
+        "description": "White gains space and Black counters with pressure on d4.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "tarrasch-variation",
+        "name": "Tarrasch Variation",
+        "moves": "1. e4 e6 2. d4 d5 3. Nd2 c5 4. exd5 exd5",
+        "description": "A flexible branch with strategic play and fewer forcing lines.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "winawer-variation",
+        "name": "Winawer Variation",
+        "moves": "1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5",
+        "description": "A complex structure with dynamic imbalances on both wings.",
+        "difficulty": "Advanced"
+      }
+    ]
+  },
+  "italian-game": {
+    "eco": "C50",
+    "keyIdeas": [
+      "Develop quickly and prepare central expansion with c3 and d4.",
+      "Coordinate bishop and knight pressure on f7 and e5.",
+      "Choose between calm maneuvering and direct tactical play."
+    ],
+    "mainLineMoves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5",
+    "variations": [
+      {
+        "id": "giuoco-piano",
+        "name": "Giuoco Piano",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d3",
+        "description": "A strategic version focused on maneuvering before central breaks.",
+        "difficulty": "Beginner"
+      },
+      {
+        "id": "two-knights-defense",
+        "name": "Two Knights Defense",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5",
+        "description": "A sharper line with tactical motifs and concrete calculation.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "giuoco-pianissimo",
+        "name": "Giuoco Pianissimo",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. d3",
+        "description": "A slower setup emphasizing piece placement and structure control.",
+        "difficulty": "Beginner"
+      }
+    ]
+  },
+  "kings-gambit": {
+    "eco": "C30",
+    "keyIdeas": [
+      "Sacrifice the f-pawn for rapid development and initiative.",
+      "Open lines toward the black king as early as possible.",
+      "Use active piece play to justify material investment."
+    ],
+    "mainLineMoves": "1. e4 e5 2. f4 exf4 3. Nf3",
+    "variations": [
+      {
+        "id": "accepted-main-line",
+        "name": "King's Gambit Accepted",
+        "moves": "1. e4 e5 2. f4 exf4 3. Nf3 g5 4. h4",
+        "description": "The critical accepted branch with immediate tactical battle.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "fischer-defense",
+        "name": "Fischer Defense",
+        "moves": "1. e4 e5 2. f4 exf4 3. Nf3 d6",
+        "description": "A practical defensive setup limiting White's direct attack.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "bishops-gambit",
+        "name": "Bishop's Gambit",
+        "moves": "1. e4 e5 2. f4 exf4 3. Bc4",
+        "description": "White develops aggressively and targets f7 immediately.",
+        "difficulty": "Advanced"
+      }
+    ]
+  },
+  "nimzo-indian-defense": {
+    "eco": "E20",
+    "keyIdeas": [
+      "Pin c3-knight to pressure e4 and central control.",
+      "Create structural imbalances with ...Bxc3 when useful.",
+      "Play for dynamic piece activity over static symmetry."
+    ],
+    "mainLineMoves": "1. d4 Nf6 2. c4 e6 3. Nc3 Bb4",
+    "variations": [
+      {
+        "id": "rubinstein-system",
+        "name": "Rubinstein System",
+        "moves": "1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3",
+        "description": "A solid setup where White avoids immediate structural damage.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "classical-system",
+        "name": "Classical System",
+        "moves": "1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2",
+        "description": "White keeps doubled pawns off the board and prepares e4.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "samisch-variation",
+        "name": "Samisch Variation",
+        "moves": "1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. a3",
+        "description": "An ambitious line that accepts structural changes for bishop pair.",
+        "difficulty": "Advanced"
+      }
+    ]
+  },
+  "pirc-defense": {
+    "eco": "B07",
+    "keyIdeas": [
+      "Allow White space and counterattack from a flexible setup.",
+      "Use kingside fianchetto and central pawn breaks.",
+      "Coordinate minor pieces before opening the center."
+    ],
+    "mainLineMoves": "1. e4 d6 2. d4 Nf6 3. Nc3 g6",
+    "variations": [
+      {
+        "id": "austrian-attack",
+        "name": "Austrian Attack",
+        "moves": "1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4",
+        "description": "White grabs central space and launches kingside pressure.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "classical-system",
+        "name": "Classical System",
+        "moves": "1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7",
+        "description": "A balanced setup with clear developing plans for both sides.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "attack-150",
+        "name": "150 Attack",
+        "moves": "1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3",
+        "description": "A direct attacking plan with long castling and kingside pawn storm.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  },
+  "queens-gambit": {
+    "eco": "D06",
+    "keyIdeas": [
+      "Fight for central influence with c-pawn tension.",
+      "Use development lead to create long-term pressure.",
+      "Transition into favorable pawn structures and endgames."
+    ],
+    "mainLineMoves": "1. d4 d5 2. c4",
+    "variations": [
+      {
+        "id": "qgd-orthodox",
+        "name": "Queen's Gambit Declined",
+        "moves": "1. d4 d5 2. c4 e6 3. Nc3 Nf6",
+        "description": "A classical structure with rich strategic themes.",
+        "difficulty": "Beginner"
+      },
+      {
+        "id": "slav-defense",
+        "name": "Slav Defense",
+        "moves": "1. d4 d5 2. c4 c6 3. Nf3 Nf6",
+        "description": "Black supports d5 with c6 and keeps a solid pawn chain.",
+        "difficulty": "Beginner"
+      },
+      {
+        "id": "accepted-line",
+        "name": "Queen's Gambit Accepted",
+        "moves": "1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3",
+        "description": "Black gives back the pawn at the right moment for development.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  },
+  "ruy-lopez": {
+    "eco": "C60",
+    "keyIdeas": [
+      "Pressure e5 and provoke weaknesses in Black's structure.",
+      "Use slow maneuvering before central or kingside breakthroughs.",
+      "Coordinate minor pieces for long-term positional edge."
+    ],
+    "mainLineMoves": "1. e4 e5 2. Nf3 Nc6 3. Bb5",
+    "variations": [
+      {
+        "id": "closed-morphy",
+        "name": "Closed Morphy Defense",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7",
+        "description": "The main strategic battleground with deep positional ideas.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "berlin-defense",
+        "name": "Berlin Defense",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6",
+        "description": "A resilient line leading to robust endgame structures.",
+        "difficulty": "Intermediate"
+      },
+      {
+        "id": "exchange-variation",
+        "name": "Exchange Variation",
+        "moves": "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6",
+        "description": "White accepts bishop pair trade to target Black's pawn structure.",
+        "difficulty": "Beginner"
+      }
+    ]
+  },
+  "scandinavian-defense": {
+    "eco": "B01",
+    "keyIdeas": [
+      "Challenge e4 immediately with ...d5.",
+      "Activate the queen early without losing coordination.",
+      "Develop quickly to neutralize White's initiative."
+    ],
+    "mainLineMoves": "1. e4 d5 2. exd5 Qxd5 3. Nc3",
+    "variations": [
+      {
+        "id": "main-line-qa5",
+        "name": "Main Line ...Qa5",
+        "moves": "1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5",
+        "description": "A stable setup where Black avoids queen harassment and develops smoothly.",
+        "difficulty": "Beginner"
+      },
+      {
+        "id": "portuguese-gambit",
+        "name": "Portuguese Gambit",
+        "moves": "1. e4 d5 2. exd5 Nf6 3. d4 Bg4",
+        "description": "Black sacrifices structure for rapid activity and tactical chances.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "icelandic-gambit",
+        "name": "Icelandic Gambit",
+        "moves": "1. e4 d5 2. exd5 Nf6 3. c4 e6",
+        "description": "Dynamic compensation through fast piece play in open lines.",
+        "difficulty": "Advanced"
+      }
+    ]
+  },
+  "sicilian-defense": {
+    "eco": "B20",
+    "keyIdeas": [
+      "Create asymmetry from move one for winning chances.",
+      "Counterattack on the queenside against White's central space.",
+      "Use tactical motifs and dynamic piece play."
+    ],
+    "mainLineMoves": "1. e4 c5 2. Nf3 d6",
+    "variations": [
+      {
+        "id": "najdorf-variation",
+        "name": "Najdorf Variation",
+        "moves": "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6",
+        "description": "A flexible and deeply theoretical system with rich attacking ideas.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "dragon-variation",
+        "name": "Dragon Variation",
+        "moves": "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6",
+        "description": "Fianchetto setup leading to opposite-side attacks and tactical play.",
+        "difficulty": "Advanced"
+      },
+      {
+        "id": "alapin-system",
+        "name": "Alapin System",
+        "moves": "1. e4 c5 2. c3",
+        "description": "White avoids main Sicilian theory and builds a broad center.",
+        "difficulty": "Intermediate"
+      }
+    ]
+  }
+}

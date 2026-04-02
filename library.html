@@ -4,34 +4,271 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ChessTree Library</title>
-    <link rel="stylesheet" href="css/library.css" />
+    <link rel="icon" type="image/png" href="img/new-logo.png" />
+    <script>
+        (() => {
+            const storageKey = "chess_tree_theme";
+            let theme = "dark";
+            try {
+                const saved = localStorage.getItem(storageKey);
+                if (saved === "dark" || saved === "light") {
+                    theme = saved;
+                }
+            } catch (_error) {
+                theme = "dark";
+            }
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <link rel="stylesheet" href="css/theme.css?v=20260402b" />
+    <link rel="stylesheet" href="css/library.css?v=20260402l" />
 </head>
 <body>
-<header>
-    <a href="index.html">Home</a>
-    <a href="tree.html">Tree</a>
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="index.html" class="brand-link" aria-label="ChessTree Home">
+            <img class="brand-logo" src="img/new-logo.png" alt="" aria-hidden="true" />
+            <span class="brand-text">ChessTree</span>
+        </a>
+
+        <nav class="topbar-links" aria-label="Primary">
+            <a href="index.html" class="nav-link">
+                <svg class="nav-icon nav-icon--home" viewBox="0 0 40 44" fill="none" aria-hidden="true">
+                    <path d="M14 42V22H26V42M2 16L20 2L38 16V38C38 39.0609 37.5786 40.0783 36.8284 40.8284C36.0783 41.5786 35.0609 42 34 42H6C4.93913 42 3.92172 41.5786 3.17157 40.8284C2.42143 40.0783 2 39.0609 2 38V16Z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="library.html" class="nav-link nav-link--active" aria-current="page">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20V18.5A2.5 2.5 0 0 0 17.5 16H4V5.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M4 16V18.5A2.5 2.5 0 0 0 6.5 21H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Library</span>
+            </a>
+            <span class="nav-link nav-link--disabled" aria-disabled="true" data-tooltip="Under construction">
+                <svg class="nav-icon" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+                    <path d="M22 42C33.0457 42 42 33.0457 42 22C42 10.9543 33.0457 2 22 2C10.9543 2 2 10.9543 2 22C2 33.0457 10.9543 42 22 42Z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M30.48 13.52L26.24 26.24L13.52 30.48L17.76 17.76L30.48 13.52Z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Explorer</span>
+            </span>
+            <a href="contact.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" />
+                    <path d="M3 7L12 13L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Contact</span>
+            </a>
+        </nav>
+    </div>
+    <div class="topbar-glow" aria-hidden="true"></div>
 </header>
 
-<main>
-    <h1>Opening Library</h1>
-    <p>Choose an opening and jump into study.</p>
+<main class="library-page">
+    <h1 class="library-title">Opening Library</h1>
 
-    <section class="grid">
-        <article id="alekhine-defense"><h2>Alekhine Defense</h2><p>Dynamic defense against 1.e4.</p></article>
-        <article id="bird-opening"><h2>Bird Opening</h2><p>Uncommon flank start with f4.</p></article>
-        <article id="caro-kann-defense"><h2>Caro-Kann Defense</h2><p>Solid and reliable response.</p></article>
-        <article id="english-opening"><h2>English Opening</h2><p>Flexible setup with c4.</p></article>
-        <article id="evans-gambit"><h2>Evans Gambit</h2><p>Classic attacking gambit in the Italian.</p></article>
-        <article id="french-defense"><h2>French Defense</h2><p>Counterattack the center with e6.</p></article>
-        <article id="italian-game"><h2>Italian Game</h2><p>Rapid development and tactical themes.</p></article>
-        <article id="kings-gambit"><h2>King's Gambit</h2><p>Sharp initiative play from move two.</p></article>
-        <article id="nimzo-indian-defense"><h2>Nimzo-Indian Defense</h2><p>Control dark squares and structure.</p></article>
-        <article id="pirc-defense"><h2>Pirc Defense</h2><p>Hypermodern defense with flexible center.</p></article>
-        <article id="queens-gambit"><h2>Queen's Gambit</h2><p>Strategic central pressure.</p></article>
-        <article id="ruy-lopez"><h2>Ruy Lopez</h2><p>One of the deepest open games.</p></article>
-        <article id="scandinavian-defense"><h2>Scandinavian Defense</h2><p>Immediate central challenge.</p></article>
-        <article id="sicilian-defense"><h2>Sicilian Defense</h2><p>Most combative answer to 1.e4.</p></article>
+    <form id="searchForm" class="search-shell" action="library.html" method="get" autocomplete="off">
+        <label class="sr-only" for="searchInput">Search openings</label>
+        <span class="search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </span>
+        <input
+            id="searchInput"
+            type="text"
+            placeholder="Search opening by name..."
+            aria-label="Search openings"
+        />
+        <button id="searchClear" class="search-clear" type="button" aria-label="Clear search">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </button>
+    </form>
+
+    <section class="library-actions" aria-label="Library controls">
+        <div class="library-actions-left">
+            <button
+                id="filtersTrigger"
+                class="filter-trigger"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls="filterDrawer"
+                aria-expanded="false"
+            >
+                <span class="filter-trigger__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <span class="filter-trigger__label">Filter by</span>
+                <span id="filtersActiveCount" class="filter-badge" hidden>0</span>
+            </button>
+            <div class="sort-control">
+                <button
+                    id="sortTrigger"
+                    class="sort-trigger"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-label="Sort openings"
+                >
+                    <span class="sort-trigger__icon sort-trigger__icon--lead" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <span class="sort-trigger__label">Sort by</span>
+                    <span id="sortCurrent" class="sort-current">Popularity: high to low</span>
+                    <span class="sort-trigger__icon sort-trigger__icon--chevron" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </button>
+                <div id="sortMenu" class="sort-menu" role="listbox" aria-label="Sort openings"></div>
+            </div>
+            <div id="activeChips" class="active-chips" aria-live="polite"></div>
+        </div>
+        <p id="resultsCount" class="results-count"></p>
+    </section>
+
+    <section class="results-panel" aria-label="Openings list">
+        <div id="rows" class="rows"></div>
+        <div id="emptyState" class="empty" hidden>
+            No openings found. Try changing search or filters.
+        </div>
     </section>
 </main>
+
+<div id="filterBackdrop" class="filter-backdrop" hidden></div>
+
+<aside
+    id="filterDrawer"
+    class="filter-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="filterDrawerTitle"
+    hidden
+>
+    <div class="filter-drawer__head">
+        <h2 id="filterDrawerTitle" class="filter-drawer__title">Filters</h2>
+        <button id="drawerClose" class="drawer-close" type="button" aria-label="Close filters">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="filter-drawer__body">
+        <section class="filter-group">
+            <h3 class="filter-group__title">Favourites</h3>
+            <div id="favoritesFilters" class="filter-list"></div>
+        </section>
+
+        <section class="filter-group">
+            <h3 class="filter-group__title">Side</h3>
+            <div id="sideFilters" class="filter-list"></div>
+        </section>
+
+        <section class="filter-group">
+            <h3 class="filter-group__title">First move</h3>
+            <div id="firstMoveFilters" class="filter-list"></div>
+        </section>
+
+        <section class="filter-group">
+            <h3 class="filter-group__title">Difficulty</h3>
+            <div class="range-block">
+                <div class="range-values">
+                    <span id="difficultyRangeLabel">1 - 5</span>
+                </div>
+                <div class="dual-range dual-range--difficulty">
+                    <div class="dual-range__track"></div>
+                    <div id="difficultyTrackFill" class="dual-range__fill"></div>
+                    <input
+                        id="difficultyMin"
+                        class="dual-range__input dual-range__input--min"
+                        type="range"
+                        min="1"
+                        max="5"
+                        step="1"
+                        value="1"
+                        aria-label="Minimum difficulty"
+                    />
+                    <input
+                        id="difficultyMax"
+                        class="dual-range__input dual-range__input--max"
+                        type="range"
+                        min="1"
+                        max="5"
+                        step="1"
+                        value="5"
+                        aria-label="Maximum difficulty"
+                    />
+                </div>
+            </div>
+        </section>
+
+        <section class="filter-group">
+            <h3 class="filter-group__title">Elo range</h3>
+            <div class="range-block">
+                <div class="range-values">
+                    <span id="eloRangeLabel">100 - 2400</span>
+                </div>
+                <div class="dual-range dual-range--elo">
+                    <div class="dual-range__track"></div>
+                    <div id="eloTrackFill" class="dual-range__fill"></div>
+                    <input
+                        id="eloMin"
+                        class="dual-range__input dual-range__input--min"
+                        type="range"
+                        min="100"
+                        max="2400"
+                        step="100"
+                        value="100"
+                        aria-label="Minimum Elo"
+                    />
+                    <input
+                        id="eloMax"
+                        class="dual-range__input dual-range__input--max"
+                        type="range"
+                        min="100"
+                        max="2400"
+                        step="100"
+                        value="2400"
+                        aria-label="Maximum Elo"
+                    />
+                </div>
+                <div class="dual-range__scale">
+                    <span class="elo-scale-start">100</span>
+                    <span class="elo-scale-end">2400+</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="filter-drawer__footer">
+        <button id="drawerReset" class="drawer-reset" type="button">Reset all</button>
+        <button id="drawerDone" class="drawer-done" type="button">Close</button>
+    </div>
+</aside>
+
+<button id="scrollTopButton" class="scroll-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 14L12 8L18 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+</button>
+
+<script src="js/theme-switcher.js"></script>
+<script src="js/toolbar-tooltip.js?v=20260401a"></script>
+<script src="js/library.js?v=20260402n"></script>
 </body>
 </html>

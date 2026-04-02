@@ -1,0 +1,15 @@
+{
+  "id": "sicilian-defense",
+  "name": "Sicilian Defense",
+  "tagline": "Most combative answer to 1.e4.",
+  "description": "Black creates immediate asymmetry and dynamic counterplay, leading to sharp positions with rich tactical possibilities.",
+  "side": "black",
+  "difficulty": 4,
+  "difficultyLabel": "Intermediate",
+  "style": "Tactical",
+  "openingType": "King Pawn",
+  "variationCount": 15,
+  "popularity": 5,
+  "recommended": true,
+  "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+}
