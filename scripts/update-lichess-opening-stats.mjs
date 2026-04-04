@@ -32,6 +32,9 @@ const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const ELO_MIN_BOUND = 100;
 const ELO_MAX_BOUND = 2400;
 const REQUEST_DELAY_MS = 90;
+const MIN_ELO_USAGE_POINTS = 2;
+const MIN_ELO_USAGE_OPENING_GAMES = 3;
+const MIN_ELO_USAGE_PEAK_PERCENT = 0.02;
 
 const token = process.env.LICHESS_API_TOKEN || process.env.LICHESS_TOKEN || "";
 
@@ -156,6 +159,31 @@ function computeRecommendedRange(points, fallbackMin, fallbackMax) {
     return normalizeRange(min, max, fallbackMin, fallbackMax);
 }
 
+function evaluateUsagePoints(points) {
+    const reliablePoints = points
+        .filter((point) => point.percent > 0 && point.openingGames >= MIN_ELO_USAGE_OPENING_GAMES)
+        .sort((a, b) => a.elo - b.elo);
+
+    if (reliablePoints.length < MIN_ELO_USAGE_POINTS) {
+        return {
+            ok: false,
+            points: reliablePoints,
+            reason: "Not enough reliable Elo buckets for this opening"
+        };
+    }
+
+    const peakPercent = Math.max(...reliablePoints.map((point) => point.percent), 0);
+    if (peakPercent < MIN_ELO_USAGE_PEAK_PERCENT) {
+        return {
+            ok: false,
+            points: reliablePoints,
+            reason: "Opening usage is too close to zero in available Elo buckets"
+        };
+    }
+
+    return { ok: true, points: reliablePoints, reason: "" };
+}
+
 function assignPopularityLevels(items) {
     const candidates = items
         .filter((item) => item.hasPopularityStats)
@@ -229,7 +257,8 @@ async function main() {
 
         }
 
-        const hasUsageStats = points.length >= 2;
+        const usageEvaluation = evaluateUsagePoints(points);
+        const hasUsageStats = usageEvaluation.ok;
         const hasPopularityStats = sumTotalGames > 0;
         const recommended = computeRecommendedRange(points, fallbackMin, fallbackMax);
         const popularityRaw = sumTotalGames > 0 ? (sumOpeningGames / sumTotalGames) : 0;
@@ -240,7 +269,7 @@ async function main() {
             sourceUrl,
             hasUsageStats,
             hasPopularityStats,
-            reason: hasUsageStats ? "" : (errors[0] || "No reliable statistics for this opening yet"),
+            reason: hasUsageStats ? "" : (usageEvaluation.reason || errors[0] || "No reliable statistics for this opening yet"),
             usageByElo: points,
             recommendedEloMin: recommended.min,
             recommendedEloMax: recommended.max,

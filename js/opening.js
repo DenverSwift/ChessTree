@@ -79,6 +79,9 @@ const DIFFICULTY_MAX = 5;
 const ELO_MIN_BOUND = 100;
 const ELO_MAX_BOUND = 2400;
 const ELO_STEP = 100;
+const MIN_ELO_USAGE_POINTS = 2;
+const MIN_ELO_USAGE_OPENING_GAMES = 3;
+const MIN_ELO_USAGE_PEAK_PERCENT = 0.02;
 const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const FILES = "abcdefgh";
 
@@ -290,9 +293,9 @@ function normalizeOpening(rawOpening, metadataById, statsById = {}, statsMeta = 
     );
     const usageByElo = Array.isArray(stats.usageByElo) ? stats.usageByElo : [];
     const hasExplicitUsageFlag = stats.hasUsageStats === true || stats.hasUsageStats === false;
-    const hasUsageStats = usageByElo.length >= 2
-        ? true
-        : (hasExplicitUsageFlag ? false : null);
+    const hasUsageStats = hasExplicitUsageFlag
+        ? (stats.hasUsageStats === true && usageByElo.length >= MIN_ELO_USAGE_POINTS)
+        : (usageByElo.length >= MIN_ELO_USAGE_POINTS ? true : null);
 
     return {
         id,
@@ -386,11 +389,47 @@ function normalizeUsageByElo(rawPoints) {
                 elo: clampedElo,
                 label,
                 percent: clamp(percent, 0, 100),
-                openingGames: Number.isFinite(openingGames) ? openingGames : 0
+                openingGames: Number.isFinite(openingGames) ? openingGames : null
             };
         })
         .filter(Boolean)
         .sort((a, b) => a.elo - b.elo);
+}
+
+function evaluateUsagePointReliability(rawPoints) {
+    const points = Array.isArray(rawPoints)
+        ? rawPoints
+            .map((point) => ({
+                ...point,
+                percent: Number(point?.percent),
+                openingGames: Number(point?.openingGames)
+            }))
+            .filter((point) => {
+                if (!Number.isFinite(point.percent) || point.percent <= 0) return false;
+                if (Number.isFinite(point.openingGames) && point.openingGames < MIN_ELO_USAGE_OPENING_GAMES) return false;
+                return true;
+            })
+            .sort((a, b) => a.elo - b.elo)
+        : [];
+
+    if (points.length < MIN_ELO_USAGE_POINTS) {
+        return {
+            ok: false,
+            points: [],
+            reason: "Not enough reliable Elo buckets for this opening"
+        };
+    }
+
+    const peakPercent = Math.max(...points.map((point) => point.percent), 0);
+    if (peakPercent < MIN_ELO_USAGE_PEAK_PERCENT) {
+        return {
+            ok: false,
+            points: [],
+            reason: "Opening usage is too close to zero in available Elo buckets"
+        };
+    }
+
+    return { ok: true, points, reason: "" };
 }
 
 async function loadOpeningStats() {
@@ -418,9 +457,11 @@ async function loadOpeningStats() {
         const popularityLevel = Number.parseInt(value.popularityLevel, 10);
         const recommendedEloMin = Number.parseInt(value.recommendedEloMin, 10);
         const recommendedEloMax = Number.parseInt(value.recommendedEloMax, 10);
-        const hasUsageStats = usageByElo.length >= 2
-            ? true
-            : false;
+        const hasUsageStatsRaw = value.hasUsageStats;
+        const hasExplicitUsageFlag = hasUsageStatsRaw === true || hasUsageStatsRaw === false;
+        const hasUsageStats = hasExplicitUsageFlag
+            ? hasUsageStatsRaw
+            : (usageByElo.length >= MIN_ELO_USAGE_POINTS);
 
         byId[openingId] = {
             popularityLevel: Number.isFinite(popularityLevel) ? clamp(popularityLevel, 1, 5) : null,
@@ -1044,21 +1085,24 @@ async function fetchExplorerPositionGameCount(fen, ratingGroup) {
 }
 
 async function fetchOpeningEloUsageStats(opening) {
-    if (opening.hasUsageStats && Array.isArray(opening.usageByElo) && opening.usageByElo.length >= 2) {
+    const cachedPoints = Array.isArray(opening.usageByElo) ? opening.usageByElo : [];
+    const cachedUsage = evaluateUsagePointReliability(cachedPoints);
+
+    if (opening.hasUsageStats && cachedUsage.ok) {
         return {
             ok: true,
             serviceName: opening.statsSourceName || "Lichess Opening Explorer",
             serviceUrl: opening.statsSourceUrl || "https://explorer.lichess.org",
-            points: opening.usageByElo
+            points: cachedUsage.points
         };
     }
 
-    if (opening.hasUsageStats === false) {
+    if (opening.hasUsageStats === false || (cachedPoints.length > 0 && !cachedUsage.ok)) {
         return {
             ok: false,
             serviceName: opening.statsSourceName || "Lichess Opening Explorer",
             serviceUrl: opening.statsSourceUrl || OPENING_EXPLORER_API_URLS[0],
-            reason: normalizeText(opening.noStatsReason, "No reliable statistics for this opening yet"),
+            reason: normalizeText(opening.noStatsReason, cachedUsage.reason || "No reliable statistics for this opening yet"),
             reasonCode: "no_stats"
         };
     }
@@ -1114,15 +1158,25 @@ async function fetchOpeningEloUsageStats(opening) {
         }
 
         const validPoints = points.filter((point) => Number.isFinite(point.percent) && Number(point.percent) > 0 && Number(point.openingGames) > 0);
-        if (validPoints.length < 2) {
+        const usageEvaluation = evaluateUsagePointReliability(validPoints);
+        if (!usageEvaluation.ok) {
             const hasAuthError = errors.some((error) => String(error).includes("HTTP 401"));
-            const hasAnyZeroOnly = points.some((point) => Number.isFinite(point.percent)) && validPoints.length === 0;
+            const hasAnySuccessfulBucket = points.some((point) => Number.isFinite(point.percent));
+            if (hasAuthError && !hasAnySuccessfulBucket) {
+                return {
+                    ok: false,
+                    serviceName: "Lichess Opening Explorer",
+                    serviceUrl: detectedSourceUrl || OPENING_EXPLORER_API_URLS[0],
+                    reason: errors[0] || "Authentication is required for online opening statistics",
+                    reasonCode: "auth_required"
+                };
+            }
             return {
                 ok: false,
                 serviceName: "Lichess Opening Explorer",
                 serviceUrl: detectedSourceUrl || OPENING_EXPLORER_API_URLS[0],
-                reason: hasAnyZeroOnly ? "No reliable statistics for this opening yet" : (errors[0] || "Could not retrieve enough valid points from online API"),
-                reasonCode: hasAnyZeroOnly ? "no_stats" : (hasAuthError ? "auth_required" : "fetch_failed")
+                reason: usageEvaluation.reason || "No reliable statistics for this opening yet",
+                reasonCode: "no_stats"
             };
         }
 
@@ -1130,7 +1184,7 @@ async function fetchOpeningEloUsageStats(opening) {
             ok: true,
             serviceName: "Lichess Opening Explorer",
             serviceUrl: detectedSourceUrl || OPENING_EXPLORER_API_URLS[0],
-            points: validPoints
+            points: usageEvaluation.points
         };
     })();
 
