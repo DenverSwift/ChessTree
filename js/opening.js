@@ -27,6 +27,9 @@ const OPENING_EXPLORER_VARIANT = "standard";
 const OPENING_EXPLORER_SPEEDS = "blitz,rapid,classical";
 const OPENING_EXPLORER_SINCE = `${Math.max(2000, new Date().getUTCFullYear() - 3)}-01`;
 const OPENING_EXPLORER_TOKEN_STORAGE_KEY = "chess_tree_lichess_token";
+const OPENING_EXPLORER_CONFIG = window.CHESS_TREE_OPENING_CONFIG && typeof window.CHESS_TREE_OPENING_CONFIG === "object"
+    ? window.CHESS_TREE_OPENING_CONFIG
+    : {};
 const ELO_USAGE_BUCKETS = [
     { ratingGroup: 100, elo: 100, label: "100" },
     { ratingGroup: 400, elo: 400, label: "400" },
@@ -134,12 +137,18 @@ function normalizeText(value, fallback = "") {
     return normalized || fallback;
 }
 
+function getConfiguredOpeningExplorerToken() {
+    return normalizeText(OPENING_EXPLORER_CONFIG.lichessApiToken);
+}
+
 function getOpeningExplorerToken() {
     try {
-        return normalizeText(window.localStorage.getItem(OPENING_EXPLORER_TOKEN_STORAGE_KEY));
+        const localToken = normalizeText(window.localStorage.getItem(OPENING_EXPLORER_TOKEN_STORAGE_KEY));
+        if (localToken) return localToken;
     } catch (_error) {
-        return "";
+        // no-op
     }
+    return getConfiguredOpeningExplorerToken();
 }
 
 function setOpeningExplorerToken(token) {
