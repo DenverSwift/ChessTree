@@ -1,0 +1,89 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChessTree Help - Getting Started</title>
+  <script>
+    (() => {
+      const storageKey = 'chess_tree_theme';
+      let theme = 'dark';
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved === 'dark' || saved === 'light') theme = saved;
+      } catch (_error) {
+        theme = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/theme.css?v=20260402b" />
+  <link rel="stylesheet" href="help.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="../index.html" class="brand-link" aria-label="ChessTree Home">
+        <img class="brand-logo" src="../img/new-logo.png" alt="" aria-hidden="true" />
+        <span class="brand-text">ChessTree</span>
+      </a>
+      <a class="help-back" href="../index.html">Back to Site</a>
+    </div>
+    <div class="topbar-glow" aria-hidden="true"></div>
+  </header>
+
+  <main class="help-page">
+    <h1 class="help-title">Getting Started</h1>
+
+    <nav class="help-tabs" aria-label="Help navigation">
+      <a class="help-tab" href="index.html">Overview</a>
+      <a class="help-tab is-active" href="getting-started.html">Getting Started</a>
+      <a class="help-tab" href="library.html">Library</a>
+      <a class="help-tab" href="glossary.html">Glossary</a>
+    </nav>
+
+    <section class="help-card">
+      <h2>Як почати роботу з ChessTree</h2>
+      <p>Цей розділ пояснює базовий сценарій користування сайтом без складних кроків. Ідея така: зайти на сайт, знайти потрібний дебют, застосувати фільтри та перейти до детальнішої сторінки дебюту.</p>
+    </section>
+
+    <section class="help-card">
+      <h2>Крок 1. Відкрий головну сторінку</h2>
+      <ul>
+        <li>вводь назву дебюту вручну;</li>
+        <li>обирай варіант із підказок;</li>
+        <li>натискай Enter або кнопку пошуку.</li>
+      </ul>
+      <p>Після цього сайт перенаправляє у Library до списку дебютів.</p>
+    </section>
+
+    <section class="help-card">
+      <h2>Крок 2. Перейди до Library</h2>
+      <p><a href="library.html">Library</a> — основне місце для роботи з дебютами. Тут видно список карток, де кожна картка відповідає одному дебюту.</p>
+      <p>Можна перейти в Library і через верхнє меню сайту, без пошуку на головній.</p>
+    </section>
+
+    <section class="help-card">
+      <h2>Крок 3-5. Вибір, фільтри, навігація</h2>
+      <ul>
+        <li>відкрий картку дебюту для детальнішого перегляду;</li>
+        <li>використай Filter by: Side, First move, Difficulty, Elo range;</li>
+        <li>для переходів використовуй Home, Library, Contact.</li>
+      </ul>
+      <p>Explorer поки що недоступний (у розробці).</p>
+    </section>
+
+    <section class="help-card">
+      <h2>Короткий сценарій</h2>
+      <ol>
+        <li>Відкрив сайт.</li>
+        <li>Знайшов дебют через пошук або Library.</li>
+        <li>Застосував фільтри.</li>
+        <li>Відкрив дебют.</li>
+        <li>Повернувся до бібліотеки за потреби.</li>
+      </ol>
+      <p>Пояснення термінів: <a href="glossary.html">Glossary</a>.</p>
+    </section>
+  </main>
+</body>
+</html>

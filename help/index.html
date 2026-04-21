@@ -1,0 +1,87 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChessTree Help - Overview</title>
+  <script>
+    (() => {
+      const storageKey = 'chess_tree_theme';
+      let theme = 'dark';
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved === 'dark' || saved === 'light') theme = saved;
+      } catch (_error) {
+        theme = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/theme.css?v=20260402b" />
+  <link rel="stylesheet" href="help.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="../index.html" class="brand-link" aria-label="ChessTree Home">
+        <img class="brand-logo" src="../img/new-logo.png" alt="" aria-hidden="true" />
+        <span class="brand-text">ChessTree</span>
+      </a>
+      <a class="help-back" href="../index.html">Back to Site</a>
+    </div>
+    <div class="topbar-glow" aria-hidden="true"></div>
+  </header>
+
+  <main class="help-page">
+    <h1 class="help-title">Довідка ChessTree</h1>
+
+    <nav class="help-tabs" aria-label="Help navigation">
+      <a class="help-tab is-active" href="index.html">Overview</a>
+      <a class="help-tab" href="getting-started.html">Getting Started</a>
+      <a class="help-tab" href="library.html">Library</a>
+      <a class="help-tab" href="glossary.html">Glossary</a>
+    </nav>
+
+    <section class="help-card">
+      <h2>Пошук по сторінці</h2>
+      <div class="search-shell">
+        <input id="helpSearch" type="text" placeholder="Пошук по тексту довідки..." />
+        <button id="helpFindBtn" class="search-btn" type="button">Знайти</button>
+        <button id="helpNextBtn" class="search-btn" type="button">Далі</button>
+      </div>
+      <p id="helpSearchStatus" class="search-status"></p>
+    </section>
+
+    <section class="help-card">
+      <h2>Що це за система</h2>
+      <p>ChessTree — це навчально-інформаційний сайт про шахові дебюти. Його головна ідея проста: зібрати в одному місці базові дебюти, щоб їх було легше переглядати, порівнювати та вибирати під свій рівень гри.</p>
+      <p>Мета ChessTree — допомогти користувачу швидко знайти дебют, який підходить за стилем і складністю. Замість хаотичного пошуку по різних джерелах, тут можна працювати з бібліотекою дебютів у зрозумілому форматі.</p>
+      <p>Детальніше про роботу з бібліотекою: <a href="library.html">Library</a>.</p>
+    </section>
+
+    <section class="help-card">
+      <h2>Для кого сайт</h2>
+      <ul>
+        <li>початківці, які тільки знайомляться з дебютами;</li>
+        <li>гравці-аматори, які хочуть систематизувати репертуар;</li>
+        <li>студенти і користувачі, які вивчають шахи системно.</li>
+      </ul>
+    </section>
+
+    <section class="help-card">
+      <h2>Основні можливості</h2>
+      <ul>
+        <li>перегляд дебютів у розділі Library;</li>
+        <li>пошук дебюту за назвою;</li>
+        <li>фільтрація списку за ключовими параметрами;</li>
+        <li>перехід у картку конкретного дебюту;</li>
+        <li>позначення улюблених дебютів (Favourites).</li>
+      </ul>
+      <p><strong>Explorer зараз у розробці.</strong></p>
+      <p>Щоб швидко почати, відкрий розділ <a href="getting-started.html">Getting Started</a>.</p>
+    </section>
+  </main>
+
+  <script src="help.js"></script>
+</body>
+</html>

@@ -88,51 +88,54 @@
             </svg>
         </button>
     </form>
-
     <section class="library-actions" aria-label="Library controls">
         <div class="library-actions-left">
-            <button
-                id="filtersTrigger"
-                class="filter-trigger"
-                type="button"
-                aria-haspopup="dialog"
-                aria-controls="filterDrawer"
-                aria-expanded="false"
-            >
-                <span class="filter-trigger__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                        <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                        <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                </span>
-                <span class="filter-trigger__label">Filter by</span>
-                <span id="filtersActiveCount" class="filter-badge" hidden>0</span>
-            </button>
-            <div class="sort-control">
+            <div class="filter-trigger-wrap">
                 <button
-                    id="sortTrigger"
-                    class="sort-trigger"
+                    id="filtersTrigger"
+                    class="filter-trigger"
                     type="button"
-                    aria-haspopup="listbox"
+                    aria-haspopup="dialog"
+                    aria-controls="filterDrawer"
                     aria-expanded="false"
-                    aria-label="Sort openings"
                 >
-                    <span class="sort-trigger__icon sort-trigger__icon--lead" aria-hidden="true">
+                    <span class="filter-trigger__icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none">
                             <path d="M4 6H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                             <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                             <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         </svg>
                     </span>
-                    <span class="sort-trigger__label">Sort by</span>
-                    <span id="sortCurrent" class="sort-current">Popularity: high to low</span>
-                    <span class="sort-trigger__icon sort-trigger__icon--chevron" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </span>
+                    <span class="filter-trigger__label">Filter by</span>
+                    <span id="filtersActiveCount" class="filter-badge" hidden>0</span>
                 </button>
+            </div>
+            <div class="sort-control">
+                <div class="sort-trigger-wrap">
+                    <button
+                        id="sortTrigger"
+                        class="sort-trigger"
+                        type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Sort openings"
+                    >
+                        <span class="sort-trigger__icon sort-trigger__icon--lead" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 6H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </span>
+                        <span class="sort-trigger__label">Sort by</span>
+                        <span id="sortCurrent" class="sort-current">Popularity: high to low</span>
+                        <span class="sort-trigger__icon sort-trigger__icon--chevron" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
                 <div id="sortMenu" class="sort-menu" role="listbox" aria-label="Sort openings"></div>
             </div>
             <div id="activeChips" class="active-chips" aria-live="polite"></div>
@@ -270,5 +273,12 @@
 <script src="js/theme-switcher.js"></script>
 <script src="js/toolbar-tooltip.js?v=20260401a"></script>
 <script src="js/library.js?v=20260402n"></script>
+<a href="help/library.html#search" class="help-fab" aria-label="Open help" title="Help" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+        <path d="M9.9 9.2C10.2 8.2 11 7.5 12.2 7.5C13.5 7.5 14.5 8.3 14.5 9.6C14.5 10.7 13.9 11.3 13.1 11.8C12.3 12.3 12 12.8 12 13.6V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="17" r="1.2" fill="currentColor"/>
+    </svg>
+</a>
 </body>
 </html>

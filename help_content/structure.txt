@@ -1,0 +1,33 @@
+﻿СТРУКТУРА МАЙБУТНЬОЇ ДОВІДКОВОЇ СИСТЕМИ (ChessTree)
+
+1. Головний розділ: Огляд системи
+   - Сторінка: overview.md
+   - Пов'язана з: getting_started.md, library.md, glossary.md
+
+2. Розділ: Початок роботи
+   - Сторінка: getting_started.md
+   - Пов'язана з: overview.md, library.md
+   - Сценарний перехід: Home -> Library -> Opening
+
+3. Розділ: Робота з Library
+   - Сторінка: library.md
+   - Пов'язана з: getting_started.md, glossary.md
+   - Описує: пошук, фільтри, картки дебютів, навігацію до сторінки дебюту
+
+4. Розділ: Глосарій
+   - Сторінка: glossary.md
+   - Пов'язана з: усіма іншими сторінками довідки
+   - Призначення: швидке пояснення термінів із інтерфейсу
+
+5. Розділ (згадка на перспективу): Explorer
+   - Поточний стан: у розробці (Under construction)
+   - У довідці згадується в overview.md та glossary.md
+   - Детальна сторінка довідки для Explorer: запланована на майбутні етапи
+
+ЗВ'ЯЗКИ МІЖ СТОРІНКАМИ
+
+overview.md -> getting_started.md
+overview.md -> library.md
+overview.md -> glossary.md
+getting_started.md -> library.md
+library.md -> glossary.md

@@ -1,0 +1,91 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChessTree Help - Library</title>
+  <script>
+    (() => {
+      const storageKey = 'chess_tree_theme';
+      let theme = 'dark';
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved === 'dark' || saved === 'light') theme = saved;
+      } catch (_error) {
+        theme = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/theme.css?v=20260402b" />
+  <link rel="stylesheet" href="help.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="../index.html" class="brand-link" aria-label="ChessTree Home">
+        <img class="brand-logo" src="../img/new-logo.png" alt="" aria-hidden="true" />
+        <span class="brand-text">ChessTree</span>
+      </a>
+      <a class="help-back" href="../index.html">Back to Site</a>
+    </div>
+    <div class="topbar-glow" aria-hidden="true"></div>
+  </header>
+
+  <main class="help-page">
+    <h1 class="help-title">Library</h1>
+
+    <nav class="help-tabs" aria-label="Help navigation">
+      <a class="help-tab" href="index.html">Overview</a>
+      <a class="help-tab" href="getting-started.html">Getting Started</a>
+      <a class="help-tab is-active" href="library.html">Library</a>
+      <a class="help-tab" href="glossary.html">Glossary</a>
+    </nav>
+
+    <section class="help-card">
+      <h2>Сторінка Library</h2>
+      <p>Library — це головна сторінка каталогу дебютів у ChessTree. Тут користувач переглядає картки, шукає дебюти, застосовує фільтри та переходить до окремого дебюту.</p>
+      <p>Загальний огляд системи: <a href="index.html">Overview</a>.</p>
+    </section>
+
+    <section id="cards" class="help-card">
+      <h2>Що відображається на сторінці</h2>
+      <ul>
+        <li>поле пошуку Search opening by name...;</li>
+        <li>кнопка Filter by;</li>
+        <li>блок Sort by;</li>
+        <li>лічильник результатів.</li>
+      </ul>
+      <p>Картка дебюту містить: назву, міні-дошку, First move, Side, Difficulty, Popularity, Elo suitability, кнопку Favourites.</p>
+      <div class="screenshot-placeholder">Скрін сторінки Library</div>
+    </section>
+
+    <section id="filters" class="help-card">
+      <h2>Як працюють фільтри</h2>
+      <h3>Колір (Side)</h3>
+      <p>Доступно: White, Black, All.</p>
+      <h3>Перший хід (First move)</h3>
+      <p>Категорії: King's Pawn, Queen's Pawn, Flank Opening, Irregular, All.</p>
+      <h3>Складність (Difficulty)</h3>
+      <p>Діапазон 1-5 (мінімум/максимум).</p>
+      <h3>Діапазон Elo (Elo range)</h3>
+      <p>Межі від 100 до 2400+ з кроком 100.</p>
+      <h3 id="sorting">Сортування (Sort by)</h3>
+      <p>Список дебютів можна відсортувати за популярністю, складністю або Elo, залежно від обраного режиму Sort by.</p>
+      <div class="screenshot-placeholder">Скрін фільтрів</div>
+    </section>
+
+    <section id="search" class="help-card">
+      <h2>Пошук і взаємодія</h2>
+      <p>Пошук у Library працює за назвою дебюту в реальному часі. Кнопка очищення повертає повний список.</p>
+      <ul>
+        <li>натисни картку, щоб перейти до дебюту;</li>
+        <li id="favourites">натисни зірочку, щоб додати/прибрати Favourites;</li>
+        <li>користуйся Favourites only;</li>
+        <li>скидай фільтри через Reset all.</li>
+      </ul>
+      <p>Терміни інтерфейсу: <a href="glossary.html">Glossary</a>.</p>
+    </section>
+  </main>
+</body>
+</html>

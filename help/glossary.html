@@ -1,0 +1,71 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChessTree Help - Glossary</title>
+  <script>
+    (() => {
+      const storageKey = 'chess_tree_theme';
+      let theme = 'dark';
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved === 'dark' || saved === 'light') theme = saved;
+      } catch (_error) {
+        theme = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/theme.css?v=20260402b" />
+  <link rel="stylesheet" href="help.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="../index.html" class="brand-link" aria-label="ChessTree Home">
+        <img class="brand-logo" src="../img/new-logo.png" alt="" aria-hidden="true" />
+        <span class="brand-text">ChessTree</span>
+      </a>
+      <a class="help-back" href="../index.html">Back to Site</a>
+    </div>
+    <div class="topbar-glow" aria-hidden="true"></div>
+  </header>
+
+  <main class="help-page">
+    <h1 class="help-title">Glossary</h1>
+
+    <nav class="help-tabs" aria-label="Help navigation">
+      <a class="help-tab" href="index.html">Overview</a>
+      <a class="help-tab" href="getting-started.html">Getting Started</a>
+      <a class="help-tab" href="library.html">Library</a>
+      <a class="help-tab is-active" href="glossary.html">Glossary</a>
+    </nav>
+
+    <section class="help-card">
+      <h2>Глосарій ChessTree</h2>
+      <p>Ці терміни часто використовуються у <a href="library.html">Library</a> та <a href="getting-started.html">Getting Started</a>.</p>
+
+      <div class="glossary-list">
+        <div class="glossary-item"><span class="glossary-term">ChessTree</span> — назва вебсайту для перегляду та вибору шахових дебютів.</div>
+        <div class="glossary-item"><span class="glossary-term">Opening</span> — шаховий дебют, початкова схема ходів у партії.</div>
+        <div class="glossary-item"><span class="glossary-term">Variation</span> — варіація дебюту, окрема гілка розвитку.</div>
+        <div class="glossary-item"><span class="glossary-term">Library</span> — сторінка-каталог дебютів.</div>
+        <div class="glossary-item"><span class="glossary-term">Explorer</span> — запланований розділ для аналізу, зараз у розробці.</div>
+        <div class="glossary-item"><span class="glossary-term">Filter</span> — інструмент відбору дебютів за умовами.</div>
+        <div class="glossary-item"><span class="glossary-term">Search</span> — поле пошуку дебютів за назвою.</div>
+        <div class="glossary-item"><span class="glossary-term">Side</span> — сторона для дебюту: White або Black.</div>
+        <div class="glossary-item"><span class="glossary-term">First move</span> — тип першого ходу в дебюті.</div>
+        <div class="glossary-item"><span class="glossary-term">Difficulty</span> — рівень складності від 1 до 5.</div>
+        <div class="glossary-item"><span class="glossary-term">Elo</span> — шаховий рейтинг гравця.</div>
+        <div class="glossary-item"><span class="glossary-term">Elo range</span> — інтервал рейтингу для фільтрації.</div>
+        <div class="glossary-item"><span class="glossary-term">Popularity</span> — умовна оцінка популярності дебюту.</div>
+        <div class="glossary-item"><span class="glossary-term">Favourites</span> — улюблені дебюти, позначені користувачем.</div>
+        <div class="glossary-item"><span class="glossary-term">Opening card</span> — картка дебюту в Library.</div>
+        <div class="glossary-item"><span class="glossary-term">Sort by</span> — сортування списку дебютів.</div>
+        <div class="glossary-item"><span class="glossary-term">Reset all</span> — скидання активних фільтрів.</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
