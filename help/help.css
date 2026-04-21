@@ -203,6 +203,26 @@ body {
   margin: 12px 0;
 }
 
+.help-screenshot {
+  margin: 12px 0;
+}
+
+.help-screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--help-radius-md);
+  background: rgba(var(--surface-rgb), 0.32);
+  box-shadow: var(--shadow-soft);
+}
+
+.help-screenshot figcaption {
+  margin-top: 8px;
+  color: var(--soft);
+  font-size: 14px;
+}
+
 .glossary-list {
   display: grid;
   gap: 10px;
