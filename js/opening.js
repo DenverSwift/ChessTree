@@ -18,7 +18,9 @@
 const OPENING_DETAILS_FILE = "data/openings/opening-details.json";
 const LIBRARY_METADATA_FILE = "data/openings/library-metadata.json";
 const LICHESS_OPENING_STATS_FILE = "data/openings/lichess-opening-stats.json";
-const EXPLORER_URL = "tree.html";
+const EXPLORER_URL = "explorer.html";
+const EXPLORER_STATE_KEY = "chess_tree_explorer_state_v2";
+const LEGACY_EXPLORER_STATE_KEY = "explorer_current_opening";
 const OPENING_EXPLORER_API_URLS = [
     "https://explorer.lichess.ovh/lichess",
     "https://explorer.lichess.org/lichess"
@@ -271,6 +273,55 @@ function navigateTo(url) {
         return;
     }
     window.location.href = url;
+}
+
+function readSavedExplorerState() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(EXPLORER_STATE_KEY) || "null");
+        if (parsed && parsed.openingId) return parsed;
+    } catch (_error) {
+        // Ignore invalid stored state and fall back to a safe value.
+    }
+
+    try {
+        const legacy = JSON.parse(localStorage.getItem(LEGACY_EXPLORER_STATE_KEY) || "null");
+        if (legacy && legacy.id) {
+            return {
+                openingId: legacy.id,
+                variationId: normalizeText(legacy.variation),
+                openingName: "",
+                variationName: ""
+            };
+        }
+    } catch (_error) {
+        // Ignore invalid legacy state.
+    }
+
+    return null;
+}
+
+function confirmExplorerReplacement(opening, variationName = "") {
+    const savedState = readSavedExplorerState();
+    const nextOpeningId = normalizeText(opening?.id, slugify(opening?.name));
+
+    if (!savedState?.openingId || !nextOpeningId || savedState.openingId === nextOpeningId) {
+        return true;
+    }
+
+    const currentLabel = savedState.variationName
+        ? `${savedState.openingName || savedState.openingId} - ${savedState.variationName}`
+        : (savedState.openingName || savedState.openingId);
+    const nextLabel = variationName
+        ? `${opening.name} - ${variationName}`
+        : opening.name;
+
+    return window.confirm(`Explorer is currently showing ${currentLabel}. Open ${nextLabel} instead?`);
+}
+
+function openExplorerTarget(opening, options = {}) {
+    if (!opening) return;
+    if (!confirmExplorerReplacement(opening, options.variationName || "")) return;
+    navigateTo(buildExplorerUrl(opening.id, options));
 }
 
 function normalizeOpening(rawOpening, metadataById, statsById = {}, statsMeta = {}) {
@@ -1872,6 +1923,10 @@ function buildExplorerUrl(openingId, options = {}) {
         params.set("variation", options.variation);
     }
 
+    if (options.source) {
+        params.set("source", options.source);
+    }
+
     if (options.line) {
         params.set("line", options.line);
     }
@@ -1888,15 +1943,18 @@ function buildYouTubeUrl(openingName) {
 function renderActions(opening) {
     if (elements.openExplorerButton) {
         elements.openExplorerButton.disabled = false;
-        elements.openExplorerButton.dataset.state = "blocked";
-        elements.openExplorerButton.setAttribute("aria-disabled", "true");
+        elements.openExplorerButton.dataset.state = "enabled";
+        elements.openExplorerButton.removeAttribute("aria-disabled");
         elements.openExplorerButton.onclick = (event) => {
             event.preventDefault();
             event.stopPropagation();
+            const openingId = opening.id || slugify(opening.name);
+            openExplorerTarget({ ...opening, id: openingId }, { source: "opening" });
         };
         elements.openExplorerButton.onkeydown = (event) => {
             if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
+                elements.openExplorerButton.click();
             }
         };
     }
@@ -1968,7 +2026,11 @@ function createVariationCard(opening, variation, index) {
     card.setAttribute("aria-label", `Open ${variation.name} in Explorer`);
 
     const openVariation = () => {
-        navigateTo(buildExplorerUrl(opening.id, { variation: variation.id }));
+        openExplorerTarget(opening, {
+            variation: variation.id,
+            variationName: variation.name,
+            source: "variation"
+        });
     };
 
     card.addEventListener("click", () => {
