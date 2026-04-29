@@ -9,6 +9,7 @@ const TREE_ZOOM_DEFAULT = 1;
 const TREE_ZOOM_WHEEL_INTENSITY = 0.0015;
 const TREE_ZOOM_TOAST_DURATION_MS = 1600;
 const FOCUS_BTN_VISIBLE_DISTANCE = 140;
+const FOCUS_BUTTON_SUPPRESS_MS = 260;
 const BOARD_PANEL_MIN_STAGE_HEIGHT_RATIO = 0.2;
 const BOARD_PANEL_COLLAPSE_DURATION_MS = 260;
 
@@ -47,6 +48,7 @@ const elements = {
     currentLineMoves: document.getElementById("currentLineMoves"),
     treeZoomToast: document.getElementById("treeZoomToast"),
     treeZoomToastValue: document.getElementById("treeZoomToastValue"),
+    escapeToLibraryBtn: document.getElementById("escapeToLibraryBtn"),
     focusActiveNodeBtn: document.getElementById("focusActiveNodeBtn"),
     resumeLastOpeningBtn: document.getElementById("resumeLastOpeningBtn"),
     boardPanel: document.getElementById("boardPanel"),
@@ -109,6 +111,7 @@ const state = {
             scale: TREE_ZOOM_DEFAULT,
             targetScale: TREE_ZOOM_DEFAULT
         },
+        suppressFocusButtonUntil: 0,
         animationFrameId: 0,
         lastTimestamp: 0
     }
@@ -324,79 +327,6 @@ function handleTreeViewportWheel(event) {
         immediate: true,
         showToast: true
     });
-}
-
-function parseFenSideToMove(fen) {
-    const sidePart = String(fen || "").split(" ")[1];
-    return sidePart === "b" ? "black" : "white";
-}
-
-function isPieceForSide(piece, side) {
-    if (!piece) return false;
-    return side === "white" ? piece === piece.toUpperCase() : piece === piece.toLowerCase();
-}
-
-function inferLastMoveArrow(beforeFen, afterFen) {
-    if (!beforeFen || !afterFen) return null;
-
-    const movingSide = parseFenSideToMove(beforeFen);
-    const before = parseFen(beforeFen);
-    const after = parseFen(afterFen);
-    const changedSquares = [];
-
-    for (let row = 0; row < 8; row += 1) {
-        for (let col = 0; col < 8; col += 1) {
-            if (before[row]?.[col] !== after[row]?.[col]) {
-                changedSquares.push({ row, col, before: before[row]?.[col] || null, after: after[row]?.[col] || null });
-            }
-        }
-    }
-
-    if (!changedSquares.length) return null;
-
-    const fromCandidates = changedSquares.filter((square) => {
-        if (!isPieceForSide(square.before, movingSide)) return false;
-        return square.after !== square.before;
-    });
-    const toCandidates = changedSquares.filter((square) => {
-        if (!isPieceForSide(square.after, movingSide)) return false;
-        return square.after !== square.before;
-    });
-
-    if (!fromCandidates.length || !toCandidates.length) return null;
-
-    const kingPiece = movingSide === "white" ? "K" : "k";
-    const kingFrom = fromCandidates.find((square) => square.before === kingPiece);
-    const kingTo = toCandidates.find((square) => square.after === kingPiece);
-    if (kingFrom && kingTo) {
-        return {
-            from: squareFromCoords(kingFrom.row, kingFrom.col),
-            to: squareFromCoords(kingTo.row, kingTo.col)
-        };
-    }
-
-    if (fromCandidates.length === 1 && toCandidates.length === 1) {
-        return {
-            from: squareFromCoords(fromCandidates[0].row, fromCandidates[0].col),
-            to: squareFromCoords(toCandidates[0].row, toCandidates[0].col)
-        };
-    }
-
-    let best = null;
-    fromCandidates.forEach((fromSquare) => {
-        toCandidates.forEach((toSquare) => {
-            const distance = Math.abs(fromSquare.row - toSquare.row) + Math.abs(fromSquare.col - toSquare.col);
-            if (!best || distance > best.distance) {
-                best = { fromSquare, toSquare, distance };
-            }
-        });
-    });
-
-    if (!best) return null;
-    return {
-        from: squareFromCoords(best.fromSquare.row, best.fromSquare.col),
-        to: squareFromCoords(best.toSquare.row, best.toSquare.col)
-    }
 }
 
 function setTreeZoom(nextScale, options = {}) {
@@ -752,71 +682,7 @@ function buildLineSnapshots(movesText) {
     return snapshots;
 }
 
-function getSquareCenterForPerspective(square, perspectiveSide = "white") {
-    const coords = coordsFromSquare(square);
-    if (!coords) return null;
-    const isBlackPerspective = perspectiveSide === "black";
-    const displayRow = isBlackPerspective ? 7 - coords.row : coords.row;
-    const displayCol = isBlackPerspective ? 7 - coords.col : coords.col;
-    return {
-        x: displayCol + 0.5,
-        y: displayRow + 0.5
-    };
-}
-
-function appendBoardMoveArrow(lastMove, perspectiveSide = "white") {
-    if (!elements.chessboard || !lastMove?.from || !lastMove?.to || lastMove.from === lastMove.to) return;
-
-    const start = getSquareCenterForPerspective(lastMove.from, perspectiveSide);
-    const end = getSquareCenterForPerspective(lastMove.to, perspectiveSide);
-    if (!start || !end) return;
-
-    const dx = end.x - start.x;
-    const dy = end.y - start.y;
-    const distance = Math.hypot(dx, dy);
-    if (distance < 0.01) return;
-
-    const ux = dx / distance;
-    const uy = dy / distance;
-    const startOffset = 0.16;
-    const endOffset = 0.42;
-    const x1 = start.x + (ux * startOffset);
-    const y1 = start.y + (uy * startOffset);
-    const x2 = end.x - (ux * endOffset);
-    const y2 = end.y - (uy * endOffset);
-
-    const svgNs = "http://www.w3.org/2000/svg";
-    const overlay = document.createElementNS(svgNs, "svg");
-    overlay.classList.add("board-move-arrow-overlay");
-    overlay.setAttribute("viewBox", "0 0 8 8");
-    overlay.setAttribute("aria-hidden", "true");
-
-    const defs = document.createElementNS(svgNs, "defs");
-    const marker = document.createElementNS(svgNs, "marker");
-    marker.setAttribute("id", "boardMoveArrowHead");
-    marker.setAttribute("markerWidth", "0.58");
-    marker.setAttribute("markerHeight", "0.58");
-    marker.setAttribute("refX", "0.49");
-    marker.setAttribute("refY", "0.29");
-    marker.setAttribute("orient", "auto");
-
-    const head = document.createElementNS(svgNs, "path");
-    head.classList.add("board-move-arrow-head");
-    head.setAttribute("d", "M0,0 L0.58,0.29 L0,0.58 Z");
-    marker.appendChild(head);
-    defs.appendChild(marker);
-    overlay.appendChild(defs);
-
-    const path = document.createElementNS(svgNs, "path");
-    path.classList.add("board-move-arrow");
-    path.setAttribute("d", `M ${x1.toFixed(3)} ${y1.toFixed(3)} L ${x2.toFixed(3)} ${y2.toFixed(3)}`);
-    path.setAttribute("marker-end", "url(#boardMoveArrowHead)");
-    overlay.appendChild(path);
-
-    elements.chessboard.appendChild(overlay);
-}
-
-function renderChessboard(fen, perspectiveSide = "white", lastMove = null) {
+function renderChessboard(fen, perspectiveSide = "white") {
     if (!elements.chessboard) return;
 
     elements.chessboard.innerHTML = "";
@@ -849,7 +715,6 @@ function renderChessboard(fen, perspectiveSide = "white", lastMove = null) {
         }
     }
 
-    appendBoardMoveArrow(lastMove, perspectiveSide);
 }
 
 async function readJson(url) {
@@ -1339,6 +1204,11 @@ function updateContextPanels(node) {
 
 }
 
+function suppressFocusButton(duration = FOCUS_BUTTON_SUPPRESS_MS) {
+    const delay = Number.isFinite(duration) ? Math.max(0, duration) : FOCUS_BUTTON_SUPPRESS_MS;
+    state.tree.suppressFocusButtonUntil = performance.now() + delay;
+}
+
 function markActivePath(activeNode) {
     state.tree.nodes.forEach((node) => {
         node.isActive = false;
@@ -1362,25 +1232,15 @@ function markActivePath(activeNode) {
     if (activeNode) activeNode.isActive = true;
 }
 
-function getNodeLastMoveArrow(node) {
-    if (!node?.parent) return null;
-    const beforeFen = normalizeText(node.parent.fen, INITIAL_FEN);
-    const afterFen = normalizeText(node.fen, beforeFen);
-    return inferLastMoveArrow(beforeFen, afterFen);
-}
-
 function setActiveNode(node, options = {}) {
     if (!node) return;
     state.tree.activeNode = node;
     state.selectedLineId = resolveLineRefForNode(node)?.id || state.currentContext?.selectedLineId || "";
     markActivePath(node);
-    renderChessboard(
-        node.fen || state.currentContext?.boardFen || INITIAL_FEN,
-        state.currentContext?.boardPerspective || "white",
-        getNodeLastMoveArrow(node)
-    );
+    renderChessboard(node.fen || state.currentContext?.boardFen || INITIAL_FEN, state.currentContext?.boardPerspective || "white");
     updateContextPanels(node);
     if (options.center !== false) {
+        suppressFocusButton();
         focusActiveNode(options.immediate === true);
     }
     renderTreeFrame();
@@ -1456,6 +1316,10 @@ function focusActiveNode(immediate = false) {
 
 function updateFocusButtonVisibility() {
     if (!elements.focusActiveNodeBtn || !elements.treeViewport) return;
+    if (performance.now() < (state.tree.suppressFocusButtonUntil || 0)) {
+        elements.focusActiveNodeBtn.hidden = true;
+        return;
+    }
 
     const activeNode = state.tree.activeNode || state.tree.root;
     if (!activeNode) {
@@ -1967,6 +1831,23 @@ async function hydrateFromRequest() {
     const source = normalizeText(params.get("source"), openingId ? (variationId ? "variation" : "opening") : "toolbar");
 
     if (!openingId) {
+        if (state.savedContext?.openingId) {
+            try {
+                const restored = await loadOpeningContext(state.savedContext.openingId, state.savedContext.variationId || "", "restored");
+                renderContext(restored);
+                saveExplorerState(restored);
+                state.savedContext = getSavedExplorerState();
+                updateResumeButton();
+                history.replaceState(null, "", buildExplorerUrl(restored.openingId, {
+                    variation: restored.variationId,
+                    source: "toolbar"
+                }));
+                return;
+            } catch (error) {
+                console.error("Unable to hydrate saved explorer state:", error);
+            }
+        }
+
         renderContext(createDefaultContext(state.savedContext));
         history.replaceState(null, "", buildExplorerUrl("", { source: "toolbar" }));
         return;
@@ -2007,7 +1888,13 @@ async function resumeSavedContext() {
 }
 
 function setupEventListeners() {
-    elements.focusActiveNodeBtn?.addEventListener("click", () => focusActiveNode(false));
+    elements.focusActiveNodeBtn?.addEventListener("click", () => {
+        suppressFocusButton();
+        focusActiveNode(false);
+    });
+    elements.escapeToLibraryBtn?.addEventListener("click", () => {
+        navigateTo("library.html");
+    });
     elements.resumeLastOpeningBtn?.addEventListener("click", () => {
         resumeSavedContext().catch((error) => {
             console.error("Unable to restore explorer state:", error);
@@ -2055,6 +1942,15 @@ function setupEventListeners() {
         refreshNodeMetrics();
         focusActiveNode(true);
         updateZoomUi();
+    });
+    window.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (event.defaultPrevented) return;
+        const target = event.target;
+        if (target && typeof target.closest === "function" && target.closest("input, textarea, select, [contenteditable='true']")) {
+            return;
+        }
+        navigateTo("library.html");
     });
 }
 

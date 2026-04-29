@@ -21,7 +21,7 @@
         })();
     </script>
     <link rel="stylesheet" href="css/theme.css?v=20260402b" />
-    <link rel="stylesheet" href="css/opening.css?v=20260402s" />
+    <link rel="stylesheet" href="css/opening.css?v=20260429a" />
 </head>
 <body>
 <header class="topbar">
@@ -118,10 +118,32 @@
     </section>
 </main>
 
+<div id="explorerReplaceDialog" class="explorer-replace-modal" hidden>
+    <div class="explorer-replace-modal__backdrop" data-modal-dismiss="true"></div>
+    <div
+        class="explorer-replace-modal__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="explorerReplaceTitle"
+        aria-describedby="explorerReplaceMessage"
+    >
+        <h2 id="explorerReplaceTitle" class="explorer-replace-modal__title">Switch opening?</h2>
+        <p id="explorerReplaceMessage" class="explorer-replace-modal__message"></p>
+        <div class="explorer-replace-modal__actions">
+            <button id="explorerReplaceCancel" class="explorer-replace-modal__btn explorer-replace-modal__btn--secondary" type="button">
+                Stay on current
+            </button>
+            <button id="explorerReplaceConfirm" class="explorer-replace-modal__btn explorer-replace-modal__btn--primary" type="button">
+                Open selected
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="js/theme-switcher.js"></script>
 <script src="js/toolbar-tooltip.js?v=20260402a"></script>
 <script src="js/opening-token.js?v=20260404a"></script>
-<script src="js/opening.js?v=20260402t"></script>
+<script src="js/opening.js?v=20260429a"></script>
 <a href="help/getting-started.html" class="help-fab" aria-label="Open help" title="Help" target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>

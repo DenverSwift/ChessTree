@@ -1357,6 +1357,85 @@ body {
     padding: 24px 16px;
 }
 
+body.is-modal-open {
+    overflow: hidden;
+}
+
+.explorer-replace-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+}
+
+.explorer-replace-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 11, 10, 0.56);
+    backdrop-filter: blur(10px);
+}
+
+.explorer-replace-modal__panel {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 100%);
+    border-radius: 18px;
+    border: 1px solid var(--library-border);
+    background: linear-gradient(160deg, rgba(var(--surface-rgb), 0.98) 0%, rgba(var(--surface-rgb), 0.94) 100%);
+    box-shadow: 0 28px 56px rgba(0, 0, 0, 0.34);
+    padding: 22px;
+}
+
+.explorer-replace-modal__title {
+    margin: 0;
+    font-size: clamp(24px, 2.2vw, 32px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+}
+
+.explorer-replace-modal__message {
+    margin: 12px 0 0;
+    color: var(--library-muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.explorer-replace-modal__actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.explorer-replace-modal__btn {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+
+.explorer-replace-modal__btn:hover {
+    transform: translateY(-1px);
+}
+
+.explorer-replace-modal__btn--secondary {
+    border-color: rgba(var(--network-rgb), 0.18);
+    background: rgba(var(--surface-rgb), 0.56);
+    color: var(--fg);
+}
+
+.explorer-replace-modal__btn--primary {
+    border-color: rgba(var(--accent-rgb), 0.42);
+    background: rgba(var(--accent-rgb), 0.22);
+    color: var(--fg);
+}
+
 @keyframes previewFloat {
     0%,
     100% {

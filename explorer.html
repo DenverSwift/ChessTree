@@ -21,7 +21,7 @@
         })();
     </script>
     <link rel="stylesheet" href="css/theme.css?v=20260402b" />
-    <link rel="stylesheet" href="css/explorer.css?v=20260428e" />
+    <link rel="stylesheet" href="css/explorer.css?v=20260429a" />
 </head>
 <body>
 <header class="topbar">
@@ -77,6 +77,9 @@
                 </div>
 
                 <div class="tree-header__actions">
+                    <button id="escapeToLibraryBtn" class="control-btn control-btn--secondary" type="button">
+                        Escape
+                    </button>
                     <button id="resumeLastOpeningBtn" class="control-btn control-btn--secondary" type="button" hidden>
                         Resume Last Tree
                     </button>
@@ -94,9 +97,9 @@
             </div>
 
             <div class="tree-footer">
-                <div class="tree-footer__block">
-                    <span class="tree-footer__label">Current Line</span>
-                    <p id="currentLineMoves" class="tree-footer__value">Start position</p>
+                <div class="current-line-readout">
+                    <span class="current-line-readout__label">Current Line</span>
+                    <p id="currentLineMoves" class="current-line-readout__value">Start position</p>
                 </div>
             </div>
 
@@ -116,9 +119,7 @@
 
         <aside id="boardPanel" class="board-panel" aria-label="Board panel">
             <div class="board-panel__top-row">
-                <button id="boardDragHandleTop" class="board-panel__grip board-panel__grip--top" type="button" aria-label="Move preview panel">
-                    <span class="board-panel__grip-lines" aria-hidden="true"></span>
-                </button>
+                <button id="boardDragHandleTop" class="board-panel__grip board-panel__grip--top" type="button" aria-label="Move preview panel"></button>
                 <button id="hideBoardPanelBtn" class="board-panel__hide" type="button" aria-label="Collapse preview panel">
                     <span aria-hidden="true">&#10005;</span>
                 </button>
@@ -133,10 +134,13 @@
                     <span id="difficultyBadge" class="tone-badge">Default</span>
                     <span id="lineBadge" class="tone-chip">No line selected</span>
                 </div>
-                <button id="boardDragHandleBottom" class="board-panel__grip board-panel__grip--bottom" type="button" aria-label="Move preview panel">
-                    <span class="board-panel__grip-lines" aria-hidden="true"></span>
-                </button>
+                <button id="boardDragHandleBottom" class="board-panel__grip board-panel__grip--bottom" type="button" aria-label="Move preview panel"></button>
             </div>
+            <span class="board-panel__move-indicator" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3L9.4 5.8H11V10H6.8L9.6 12.6L6.8 15.2H11V20L12 21L13 20V15.2H17.2L14.4 12.6L17.2 10H13V5.8L12 3Z" fill="currentColor"/>
+                </svg>
+            </span>
 
             <div class="board-panel__resize-handles" aria-hidden="true">
                 <button class="board-panel__resize-handle board-panel__resize-handle--n" type="button" data-resize-direction="n" aria-label="Resize preview"></button>
@@ -154,6 +158,6 @@
 
 <script src="js/toolbar-tooltip.js?v=20260402a"></script>
 <script src="js/opening-token.js?v=20260404a"></script>
-<script src="js/explorer.js?v=20260428e"></script>
+<script src="js/explorer.js?v=20260429a"></script>
 </body>
 </html>

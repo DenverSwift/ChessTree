@@ -116,7 +116,11 @@ const elements = {
     openExplorerButton: document.getElementById("openExplorerButton"),
     openYoutubeButton: document.getElementById("openYoutubeButton"),
     variationsList: document.getElementById("variationsList"),
-    variationsEmpty: document.getElementById("variationsEmpty")
+    variationsEmpty: document.getElementById("variationsEmpty"),
+    explorerReplaceDialog: document.getElementById("explorerReplaceDialog"),
+    explorerReplaceMessage: document.getElementById("explorerReplaceMessage"),
+    explorerReplaceConfirm: document.getElementById("explorerReplaceConfirm"),
+    explorerReplaceCancel: document.getElementById("explorerReplaceCancel")
 };
 const explorerCountCache = new Map();
 const openingEloUsageCache = new Map();
@@ -300,7 +304,73 @@ function readSavedExplorerState() {
     return null;
 }
 
-function confirmExplorerReplacement(opening, variationName = "") {
+function openExplorerReplaceDialog(currentLabel, nextLabel) {
+    const dialog = elements.explorerReplaceDialog;
+    const message = elements.explorerReplaceMessage;
+    const confirmBtn = elements.explorerReplaceConfirm;
+    const cancelBtn = elements.explorerReplaceCancel;
+
+    if (!dialog || !message || !confirmBtn || !cancelBtn) {
+        console.warn("Explorer replacement modal is unavailable; proceeding without prompt.");
+        return Promise.resolve(true);
+    }
+
+    message.textContent = `Explorer is currently showing "${currentLabel}". Open "${nextLabel}" instead?`;
+    dialog.hidden = false;
+    document.body.classList.add("is-modal-open");
+
+    const previousFocus = document.activeElement;
+    confirmBtn.focus();
+
+    return new Promise((resolve) => {
+        let settled = false;
+        let onConfirm;
+        let onCancel;
+        let onBackdrop;
+        let onKeydown;
+
+        const cleanup = () => {
+            confirmBtn.removeEventListener("click", onConfirm);
+            cancelBtn.removeEventListener("click", onCancel);
+            dialog.removeEventListener("click", onBackdrop);
+            window.removeEventListener("keydown", onKeydown);
+        };
+
+        const finalize = (accepted) => {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            dialog.hidden = true;
+            document.body.classList.remove("is-modal-open");
+            if (previousFocus && typeof previousFocus.focus === "function") {
+                previousFocus.focus();
+            }
+            resolve(Boolean(accepted));
+        };
+
+        onConfirm = () => finalize(true);
+        onCancel = () => finalize(false);
+        onBackdrop = (event) => {
+            const target = event.target;
+            if (target && target.dataset?.modalDismiss === "true") {
+                finalize(false);
+            }
+        };
+        onKeydown = (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                finalize(false);
+            }
+        };
+
+        confirmBtn.addEventListener("click", onConfirm);
+        cancelBtn.addEventListener("click", onCancel);
+        dialog.addEventListener("click", onBackdrop);
+        window.addEventListener("keydown", onKeydown);
+    });
+}
+
+async function confirmExplorerReplacement(opening, variationName = "") {
     const savedState = readSavedExplorerState();
     const nextOpeningId = normalizeText(opening?.id, slugify(opening?.name));
 
@@ -315,12 +385,12 @@ function confirmExplorerReplacement(opening, variationName = "") {
         ? `${opening.name} - ${variationName}`
         : opening.name;
 
-    return window.confirm(`Explorer is currently showing ${currentLabel}. Open ${nextLabel} instead?`);
+    return openExplorerReplaceDialog(currentLabel, nextLabel);
 }
 
-function openExplorerTarget(opening, options = {}) {
+async function openExplorerTarget(opening, options = {}) {
     if (!opening) return;
-    if (!confirmExplorerReplacement(opening, options.variationName || "")) return;
+    if (!await confirmExplorerReplacement(opening, options.variationName || "")) return;
     navigateTo(buildExplorerUrl(opening.id, options));
 }
 
@@ -1949,7 +2019,7 @@ function renderActions(opening) {
             event.preventDefault();
             event.stopPropagation();
             const openingId = opening.id || slugify(opening.name);
-            openExplorerTarget({ ...opening, id: openingId }, { source: "opening" });
+            void openExplorerTarget({ ...opening, id: openingId }, { source: "opening" });
         };
         elements.openExplorerButton.onkeydown = (event) => {
             if (event.key === "Enter" || event.key === " ") {
@@ -2025,8 +2095,8 @@ function createVariationCard(opening, variation, index) {
     card.setAttribute("role", "link");
     card.setAttribute("aria-label", `Open ${variation.name} in Explorer`);
 
-    const openVariation = () => {
-        openExplorerTarget(opening, {
+    const openVariation = async () => {
+        await openExplorerTarget(opening, {
             variation: variation.id,
             variationName: variation.name,
             source: "variation"
@@ -2034,13 +2104,13 @@ function createVariationCard(opening, variation, index) {
     };
 
     card.addEventListener("click", () => {
-        openVariation();
+        void openVariation();
     });
 
     card.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            openVariation();
+            void openVariation();
         }
     });
 
