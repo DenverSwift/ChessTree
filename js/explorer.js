@@ -3,6 +3,14 @@ const OPENING_DETAILS_FILE = "data/openings/opening-details.json";
 const EXPLORER_STATE_KEY = "chess_tree_explorer_state_v2";
 const LEGACY_EXPLORER_STATE_KEY = "explorer_current_opening";
 const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
+const TREE_ZOOM_MIN = 0.55;
+const TREE_ZOOM_MAX = 1.9;
+const TREE_ZOOM_DEFAULT = 1;
+const TREE_ZOOM_WHEEL_INTENSITY = 0.0015;
+const TREE_ZOOM_TOAST_DURATION_MS = 1600;
+const FOCUS_BTN_VISIBLE_DISTANCE = 140;
+const BOARD_PANEL_MIN_STAGE_HEIGHT_RATIO = 0.2;
+const BOARD_PANEL_COLLAPSE_DURATION_MS = 260;
 
 const PIECE_IMAGES = {
     P: "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
@@ -37,17 +45,19 @@ const elements = {
     treeConnectionsGroup: document.getElementById("treeConnectionsGroup"),
     treeNodesLayer: document.getElementById("treeNodesLayer"),
     currentLineMoves: document.getElementById("currentLineMoves"),
-    treeStatus: document.getElementById("treeStatus"),
+    treeZoomToast: document.getElementById("treeZoomToast"),
+    treeZoomToastValue: document.getElementById("treeZoomToastValue"),
     focusActiveNodeBtn: document.getElementById("focusActiveNodeBtn"),
     resumeLastOpeningBtn: document.getElementById("resumeLastOpeningBtn"),
     boardPanel: document.getElementById("boardPanel"),
-    boardDragHandle: document.getElementById("boardDragHandle"),
-    boardSourceLabel: document.getElementById("boardSourceLabel"),
-    boardContextTitle: document.getElementById("boardContextTitle"),
+    boardDragHandleTop: document.getElementById("boardDragHandleTop"),
+    boardDragHandleBottom: document.getElementById("boardDragHandleBottom"),
+    boardResizeHandles: Array.from(document.querySelectorAll(".board-panel__resize-handle")),
+    hideBoardPanelBtn: document.getElementById("hideBoardPanelBtn"),
+    restoreBoardPanelBtn: document.getElementById("restoreBoardPanelBtn"),
     chessboard: document.getElementById("chessboard"),
     difficultyBadge: document.getElementById("difficultyBadge"),
-    lineBadge: document.getElementById("lineBadge"),
-    positionDescription: document.getElementById("positionDescription")
+    lineBadge: document.getElementById("lineBadge")
 };
 
 const state = {
@@ -58,10 +68,22 @@ const state = {
     boardPanel: {
         x: 24,
         y: 24,
+        width: 0,
+        height: 0,
+        aspect: 1,
+        isHidden: false,
         isDragging: false,
+        isResizing: false,
         pointerId: null,
         offsetX: 0,
-        offsetY: 0
+        offsetY: 0,
+        resizeDirection: "",
+        resizeStartClientX: 0,
+        resizeStartClientY: 0,
+        resizeStartX: 0,
+        resizeStartY: 0,
+        resizeStartWidth: 0,
+        resizeStartHeight: 0
     },
     tree: {
         nodes: [],
@@ -69,16 +91,31 @@ const state = {
         root: null,
         activeNode: null,
         draggedNode: null,
+        viewportPan: {
+            isPanning: false,
+            pointerId: null,
+            startClientX: 0,
+            startClientY: 0,
+            startTargetX: 0,
+            startTargetY: 0,
+            startX: 0,
+            startY: 0
+        },
         camera: {
             x: 0,
             y: 0,
             targetX: 0,
-            targetY: 0
+            targetY: 0,
+            scale: TREE_ZOOM_DEFAULT,
+            targetScale: TREE_ZOOM_DEFAULT
         },
         animationFrameId: 0,
         lastTimestamp: 0
     }
 };
+
+let zoomToastTimeoutId = 0;
+let boardPanelCollapseTimeoutId = 0;
 
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -149,6 +186,255 @@ function applyTone(level) {
     elements.explorerStage.style.setProperty("--explorer-accent-rgb", palette.rgb);
     elements.explorerStage.style.setProperty("--explorer-accent-soft", `rgba(${palette.rgb}, 0.18)`);
     elements.explorerStage.style.setProperty("--explorer-line-strong", `rgba(${palette.rgb}, 0.58)`);
+}
+
+function isBoardPanelVisible() {
+    return Boolean(elements.boardPanel) && !state.boardPanel.isHidden;
+}
+
+function getStageMargin() {
+    return window.innerWidth <= 860 ? 16 : 24;
+}
+
+function syncDynamicLayoutInsets() {
+    if (!elements.explorerStage) return;
+
+    const margin = getStageMargin();
+    let safeLeft = margin;
+    let safeRight = margin;
+
+    if (isBoardPanelVisible() && window.innerWidth > 860 && elements.boardPanel) {
+        const stageRect = elements.explorerStage.getBoundingClientRect();
+        const boardRect = elements.boardPanel.getBoundingClientRect();
+        const headerBottom = stageRect.top + 228;
+        const overlapsHeader = boardRect.top <= headerBottom;
+
+        if (overlapsHeader) {
+            const boardCenterX = boardRect.left + (boardRect.width / 2);
+            const stageCenterX = stageRect.left + (stageRect.width / 2);
+            if (boardCenterX <= stageCenterX) {
+                safeLeft = Math.max(margin, Math.round(boardRect.right - stageRect.left + margin));
+            } else {
+                safeRight = Math.max(margin, Math.round(stageRect.right - boardRect.left + margin));
+            }
+        }
+    }
+
+    elements.explorerStage.style.setProperty("--board-safe-left", `${safeLeft}px`);
+    elements.explorerStage.style.setProperty("--board-safe-right", `${safeRight}px`);
+    elements.explorerStage.style.setProperty("--board-safe-bottom", `${margin}px`);
+}
+
+function getBoardPanelStageRect() {
+    if (!elements.explorerStage) return null;
+    return elements.explorerStage.getBoundingClientRect();
+}
+
+function getBoardPanelSizeLimits(stageRect, aspect) {
+    if (!stageRect) {
+        return { minHeight: 0, maxHeight: 0 };
+    }
+
+    const stageHeight = Math.max(1, stageRect.height);
+    const stageWidth = Math.max(1, stageRect.width);
+    const minByStage = stageHeight * BOARD_PANEL_MIN_STAGE_HEIGHT_RATIO;
+    const maxByStage = stageHeight;
+    const maxByWidth = stageWidth / Math.max(0.45, aspect || 1);
+    const maxHeight = Math.max(minByStage, Math.min(maxByStage, maxByWidth));
+    const minHeight = Math.min(maxHeight, minByStage);
+
+    return { minHeight, maxHeight };
+}
+
+function getBoardPanelBounds(stageRect, width, height) {
+    if (!stageRect) {
+        return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+    }
+
+    return {
+        minX: 0,
+        minY: 0,
+        maxX: Math.max(0, stageRect.width - width),
+        maxY: Math.max(0, stageRect.height - height)
+    };
+}
+
+function ensureBoardPanelSizeSnapshot() {
+    if (!elements.boardPanel || window.innerWidth <= 860) return;
+    if (state.boardPanel.width > 0 && state.boardPanel.height > 0) return;
+
+    const rect = elements.boardPanel.getBoundingClientRect();
+    state.boardPanel.width = Math.max(120, Math.round(rect.width));
+    state.boardPanel.height = Math.max(200, Math.round(rect.height));
+    state.boardPanel.aspect = state.boardPanel.width / Math.max(1, state.boardPanel.height);
+}
+
+function applyBoardPanelFrame(x, y, width, height) {
+    if (!elements.boardPanel) return;
+
+    state.boardPanel.x = x;
+    state.boardPanel.y = y;
+    state.boardPanel.width = width;
+    state.boardPanel.height = height;
+    state.boardPanel.aspect = width / Math.max(1, height);
+
+    elements.boardPanel.style.left = `${x}px`;
+    elements.boardPanel.style.top = `${y}px`;
+    elements.boardPanel.style.width = `${width}px`;
+    elements.boardPanel.style.height = `${height}px`;
+}
+
+function updateZoomUi() {
+    const zoomPercent = Math.round(clamp(state.tree.camera.targetScale, TREE_ZOOM_MIN, TREE_ZOOM_MAX) * 100);
+    if (elements.treeZoomToastValue) {
+        elements.treeZoomToastValue.textContent = `${zoomPercent}%`;
+    }
+}
+
+function showTreeZoomToast() {
+    if (!elements.treeZoomToast) return;
+    updateZoomUi();
+    elements.treeZoomToast.classList.add("is-visible");
+    elements.treeZoomToast.setAttribute("aria-hidden", "false");
+    window.clearTimeout(zoomToastTimeoutId);
+    zoomToastTimeoutId = window.setTimeout(() => {
+        elements.treeZoomToast?.classList.remove("is-visible");
+        elements.treeZoomToast?.setAttribute("aria-hidden", "true");
+    }, TREE_ZOOM_TOAST_DURATION_MS);
+}
+
+function hideTreeZoomToast() {
+    if (!elements.treeZoomToast) return;
+    window.clearTimeout(zoomToastTimeoutId);
+    elements.treeZoomToast.classList.remove("is-visible");
+    elements.treeZoomToast.setAttribute("aria-hidden", "true");
+}
+
+function handleTreeViewportWheel(event) {
+    if (!elements.treeViewport) return;
+    event.preventDefault();
+    const viewportRect = elements.treeViewport.getBoundingClientRect();
+    const pivotX = clamp(event.clientX - viewportRect.left, 0, viewportRect.width);
+    const pivotY = clamp(event.clientY - viewportRect.top, 0, viewportRect.height);
+    const baseScale = state.tree.camera.targetScale || state.tree.camera.scale || TREE_ZOOM_DEFAULT;
+    const nextScale = baseScale * Math.exp(-event.deltaY * TREE_ZOOM_WHEEL_INTENSITY);
+    setTreeZoom(nextScale, {
+        pivotX,
+        pivotY,
+        immediate: true,
+        showToast: true
+    });
+}
+
+function parseFenSideToMove(fen) {
+    const sidePart = String(fen || "").split(" ")[1];
+    return sidePart === "b" ? "black" : "white";
+}
+
+function isPieceForSide(piece, side) {
+    if (!piece) return false;
+    return side === "white" ? piece === piece.toUpperCase() : piece === piece.toLowerCase();
+}
+
+function inferLastMoveArrow(beforeFen, afterFen) {
+    if (!beforeFen || !afterFen) return null;
+
+    const movingSide = parseFenSideToMove(beforeFen);
+    const before = parseFen(beforeFen);
+    const after = parseFen(afterFen);
+    const changedSquares = [];
+
+    for (let row = 0; row < 8; row += 1) {
+        for (let col = 0; col < 8; col += 1) {
+            if (before[row]?.[col] !== after[row]?.[col]) {
+                changedSquares.push({ row, col, before: before[row]?.[col] || null, after: after[row]?.[col] || null });
+            }
+        }
+    }
+
+    if (!changedSquares.length) return null;
+
+    const fromCandidates = changedSquares.filter((square) => {
+        if (!isPieceForSide(square.before, movingSide)) return false;
+        return square.after !== square.before;
+    });
+    const toCandidates = changedSquares.filter((square) => {
+        if (!isPieceForSide(square.after, movingSide)) return false;
+        return square.after !== square.before;
+    });
+
+    if (!fromCandidates.length || !toCandidates.length) return null;
+
+    const kingPiece = movingSide === "white" ? "K" : "k";
+    const kingFrom = fromCandidates.find((square) => square.before === kingPiece);
+    const kingTo = toCandidates.find((square) => square.after === kingPiece);
+    if (kingFrom && kingTo) {
+        return {
+            from: squareFromCoords(kingFrom.row, kingFrom.col),
+            to: squareFromCoords(kingTo.row, kingTo.col)
+        };
+    }
+
+    if (fromCandidates.length === 1 && toCandidates.length === 1) {
+        return {
+            from: squareFromCoords(fromCandidates[0].row, fromCandidates[0].col),
+            to: squareFromCoords(toCandidates[0].row, toCandidates[0].col)
+        };
+    }
+
+    let best = null;
+    fromCandidates.forEach((fromSquare) => {
+        toCandidates.forEach((toSquare) => {
+            const distance = Math.abs(fromSquare.row - toSquare.row) + Math.abs(fromSquare.col - toSquare.col);
+            if (!best || distance > best.distance) {
+                best = { fromSquare, toSquare, distance };
+            }
+        });
+    });
+
+    if (!best) return null;
+    return {
+        from: squareFromCoords(best.fromSquare.row, best.fromSquare.col),
+        to: squareFromCoords(best.toSquare.row, best.toSquare.col)
+    }
+}
+
+function setTreeZoom(nextScale, options = {}) {
+    if (!elements.treeViewport) return;
+
+    const camera = state.tree.camera;
+    const clampedScale = clamp(nextScale, TREE_ZOOM_MIN, TREE_ZOOM_MAX);
+    const previousScale = camera.targetScale || camera.scale || TREE_ZOOM_DEFAULT;
+    if (!Number.isFinite(clampedScale) || Math.abs(clampedScale - previousScale) < 0.0001) {
+        updateZoomUi();
+        if (options.showToast === true) {
+            showTreeZoomToast();
+        }
+        return;
+    }
+
+    const pivotX = Number.isFinite(options.pivotX) ? options.pivotX : ((elements.treeViewport.clientWidth || 0) / 2);
+    const pivotY = Number.isFinite(options.pivotY) ? options.pivotY : ((elements.treeViewport.clientHeight || 0) / 2);
+
+    const worldAtTargetX = (pivotX - camera.targetX) / previousScale;
+    const worldAtTargetY = (pivotY - camera.targetY) / previousScale;
+    const worldAtCurrentX = (pivotX - camera.x) / (camera.scale || previousScale);
+    const worldAtCurrentY = (pivotY - camera.y) / (camera.scale || previousScale);
+
+    camera.targetScale = clampedScale;
+    camera.targetX = pivotX - (worldAtTargetX * clampedScale);
+    camera.targetY = pivotY - (worldAtTargetY * clampedScale);
+
+    if (options.immediate === true) {
+        camera.scale = clampedScale;
+        camera.x = pivotX - (worldAtCurrentX * clampedScale);
+        camera.y = pivotY - (worldAtCurrentY * clampedScale);
+    }
+
+    updateZoomUi();
+    if (options.showToast === true) {
+        showTreeZoomToast();
+    }
 }
 
 function parseFen(fen) {
@@ -466,7 +752,71 @@ function buildLineSnapshots(movesText) {
     return snapshots;
 }
 
-function renderChessboard(fen, perspectiveSide = "white") {
+function getSquareCenterForPerspective(square, perspectiveSide = "white") {
+    const coords = coordsFromSquare(square);
+    if (!coords) return null;
+    const isBlackPerspective = perspectiveSide === "black";
+    const displayRow = isBlackPerspective ? 7 - coords.row : coords.row;
+    const displayCol = isBlackPerspective ? 7 - coords.col : coords.col;
+    return {
+        x: displayCol + 0.5,
+        y: displayRow + 0.5
+    };
+}
+
+function appendBoardMoveArrow(lastMove, perspectiveSide = "white") {
+    if (!elements.chessboard || !lastMove?.from || !lastMove?.to || lastMove.from === lastMove.to) return;
+
+    const start = getSquareCenterForPerspective(lastMove.from, perspectiveSide);
+    const end = getSquareCenterForPerspective(lastMove.to, perspectiveSide);
+    if (!start || !end) return;
+
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance < 0.01) return;
+
+    const ux = dx / distance;
+    const uy = dy / distance;
+    const startOffset = 0.16;
+    const endOffset = 0.42;
+    const x1 = start.x + (ux * startOffset);
+    const y1 = start.y + (uy * startOffset);
+    const x2 = end.x - (ux * endOffset);
+    const y2 = end.y - (uy * endOffset);
+
+    const svgNs = "http://www.w3.org/2000/svg";
+    const overlay = document.createElementNS(svgNs, "svg");
+    overlay.classList.add("board-move-arrow-overlay");
+    overlay.setAttribute("viewBox", "0 0 8 8");
+    overlay.setAttribute("aria-hidden", "true");
+
+    const defs = document.createElementNS(svgNs, "defs");
+    const marker = document.createElementNS(svgNs, "marker");
+    marker.setAttribute("id", "boardMoveArrowHead");
+    marker.setAttribute("markerWidth", "0.58");
+    marker.setAttribute("markerHeight", "0.58");
+    marker.setAttribute("refX", "0.49");
+    marker.setAttribute("refY", "0.29");
+    marker.setAttribute("orient", "auto");
+
+    const head = document.createElementNS(svgNs, "path");
+    head.classList.add("board-move-arrow-head");
+    head.setAttribute("d", "M0,0 L0.58,0.29 L0,0.58 Z");
+    marker.appendChild(head);
+    defs.appendChild(marker);
+    overlay.appendChild(defs);
+
+    const path = document.createElementNS(svgNs, "path");
+    path.classList.add("board-move-arrow");
+    path.setAttribute("d", `M ${x1.toFixed(3)} ${y1.toFixed(3)} L ${x2.toFixed(3)} ${y2.toFixed(3)}`);
+    path.setAttribute("marker-end", "url(#boardMoveArrowHead)");
+    overlay.appendChild(path);
+
+    elements.chessboard.appendChild(overlay);
+}
+
+function renderChessboard(fen, perspectiveSide = "white", lastMove = null) {
     if (!elements.chessboard) return;
 
     elements.chessboard.innerHTML = "";
@@ -498,6 +848,8 @@ function renderChessboard(fen, perspectiveSide = "white") {
             elements.chessboard.appendChild(square);
         }
     }
+
+    appendBoardMoveArrow(lastMove, perspectiveSide);
 }
 
 async function readJson(url) {
@@ -970,12 +1322,6 @@ function updateContextPanels(node) {
         elements.currentLineMoves.textContent = getNodePathText(activeNode);
     }
 
-    if (elements.treeStatus) {
-        const nodeCount = context?.tree?.nodes?.length || state.tree.nodes.length;
-        const variationCount = context?.tree?.lines?.filter((line) => line.kind === "variation").length || 0;
-        elements.treeStatus.textContent = `${nodeCount} nodes loaded. Drag nodes to refine the layout. ${variationCount ? `${variationCount} variation branches available.` : "Main line only for this view."}`;
-    }
-
     if (elements.lineBadge) {
         if (!lineRef) {
             elements.lineBadge.textContent = "Start position";
@@ -986,20 +1332,11 @@ function updateContextPanels(node) {
         }
     }
 
-    if (elements.positionDescription) {
-        elements.positionDescription.textContent = lineRef?.description || context?.description || "Opening tree preview.";
-    }
-
     if (elements.difficultyBadge) {
         const level = lineRef?.difficultyLevel || context?.difficultyLevel || 2;
         elements.difficultyBadge.textContent = getDifficultyLabel(level);
     }
 
-    if (elements.boardContextTitle) {
-        elements.boardContextTitle.textContent = lineRef?.kind === "variation"
-            ? lineRef.name
-            : (context?.boardTitle || "Starting Position");
-    }
 }
 
 function markActivePath(activeNode) {
@@ -1025,12 +1362,23 @@ function markActivePath(activeNode) {
     if (activeNode) activeNode.isActive = true;
 }
 
+function getNodeLastMoveArrow(node) {
+    if (!node?.parent) return null;
+    const beforeFen = normalizeText(node.parent.fen, INITIAL_FEN);
+    const afterFen = normalizeText(node.fen, beforeFen);
+    return inferLastMoveArrow(beforeFen, afterFen);
+}
+
 function setActiveNode(node, options = {}) {
     if (!node) return;
     state.tree.activeNode = node;
     state.selectedLineId = resolveLineRefForNode(node)?.id || state.currentContext?.selectedLineId || "";
     markActivePath(node);
-    renderChessboard(node.fen || state.currentContext?.boardFen || INITIAL_FEN, state.currentContext?.boardPerspective || "white");
+    renderChessboard(
+        node.fen || state.currentContext?.boardFen || INITIAL_FEN,
+        state.currentContext?.boardPerspective || "white",
+        getNodeLastMoveArrow(node)
+    );
     updateContextPanels(node);
     if (options.center !== false) {
         focusActiveNode(options.immediate === true);
@@ -1039,7 +1387,7 @@ function setActiveNode(node, options = {}) {
 }
 
 function getBoardRectWithinViewport() {
-    if (!elements.treeViewport || !elements.boardPanel || window.innerWidth <= 860) {
+    if (!elements.treeViewport || !isBoardPanelVisible() || window.innerWidth <= 860) {
         return null;
     }
 
@@ -1095,9 +1443,10 @@ function focusActiveNode(immediate = false) {
     const activeNode = state.tree.activeNode || state.tree.root;
     if (!activeNode || !elements.treeViewport) return;
 
+    const scale = state.tree.camera.targetScale || state.tree.camera.scale || TREE_ZOOM_DEFAULT;
     const center = getPreferredTreeCenter();
-    state.tree.camera.targetX = center.x - activeNode.x - (activeNode.width / 2);
-    state.tree.camera.targetY = center.y - activeNode.y - (activeNode.height / 2);
+    state.tree.camera.targetX = center.x - ((activeNode.x + (activeNode.width / 2)) * scale);
+    state.tree.camera.targetY = center.y - ((activeNode.y + (activeNode.height / 2)) * scale);
 
     if (immediate) {
         state.tree.camera.x = state.tree.camera.targetX;
@@ -1105,21 +1454,47 @@ function focusActiveNode(immediate = false) {
     }
 }
 
+function updateFocusButtonVisibility() {
+    if (!elements.focusActiveNodeBtn || !elements.treeViewport) return;
+
+    const activeNode = state.tree.activeNode || state.tree.root;
+    if (!activeNode) {
+        elements.focusActiveNodeBtn.hidden = true;
+        return;
+    }
+
+    const center = getPreferredTreeCenter();
+    const scale = state.tree.camera.scale || state.tree.camera.targetScale || TREE_ZOOM_DEFAULT;
+    const nodeCenterX = state.tree.camera.x + ((activeNode.x + (activeNode.width / 2)) * scale);
+    const nodeCenterY = state.tree.camera.y + ((activeNode.y + (activeNode.height / 2)) * scale);
+    const distance = Math.hypot(nodeCenterX - center.x, nodeCenterY - center.y);
+
+    elements.focusActiveNodeBtn.hidden = distance < FOCUS_BTN_VISIBLE_DISTANCE;
+}
+
 function renderTreeFrame() {
     const camera = state.tree.camera;
+    const scale = camera.scale || TREE_ZOOM_DEFAULT;
+    const pixelRatio = window.devicePixelRatio || 1;
+    const renderCameraX = Math.round(camera.x * pixelRatio) / pixelRatio;
+    const renderCameraY = Math.round(camera.y * pixelRatio) / pixelRatio;
 
     if (elements.treeNodesLayer) {
-        elements.treeNodesLayer.style.transform = `translate(${camera.x}px, ${camera.y}px)`;
+        elements.treeNodesLayer.style.transform = `translate(${renderCameraX}px, ${renderCameraY}px) scale(${scale})`;
     }
 
     if (elements.treeConnectionsGroup) {
-        elements.treeConnectionsGroup.setAttribute("transform", `translate(${camera.x} ${camera.y})`);
+        elements.treeConnectionsGroup.setAttribute("transform", `translate(${renderCameraX} ${renderCameraY}) scale(${scale})`);
     }
 
     state.tree.nodes.forEach((node) => {
         if (!node.element) return;
-        node.element.style.left = `${node.x}px`;
-        node.element.style.top = `${node.y}px`;
+        const renderX = Math.round(node.x * 2) / 2;
+        const renderY = Math.round(node.y * 2) / 2;
+        node.renderX = renderX;
+        node.renderY = renderY;
+        node.element.style.left = `${renderX}px`;
+        node.element.style.top = `${renderY}px`;
         node.element.classList.toggle("is-active", Boolean(node.isActive));
         node.element.classList.toggle("is-on-path", Boolean(node.isOnPath));
         node.element.classList.toggle("is-dragging", state.tree.draggedNode === node);
@@ -1127,10 +1502,10 @@ function renderTreeFrame() {
 
     state.tree.edges.forEach((edge) => {
         if (!edge.element) return;
-        const fromX = edge.from.x + (edge.from.width / 2);
-        const fromY = edge.from.y + (edge.from.height / 2);
-        const toX = edge.to.x + (edge.to.width / 2);
-        const toY = edge.to.y + (edge.to.height / 2);
+        const fromX = (Number.isFinite(edge.from.renderX) ? edge.from.renderX : edge.from.x) + (edge.from.width / 2);
+        const fromY = (Number.isFinite(edge.from.renderY) ? edge.from.renderY : edge.from.y) + (edge.from.height / 2);
+        const toX = (Number.isFinite(edge.to.renderX) ? edge.to.renderX : edge.to.x) + (edge.to.width / 2);
+        const toY = (Number.isFinite(edge.to.renderY) ? edge.to.renderY : edge.to.y) + (edge.to.height / 2);
         const direction = toX >= fromX ? 1 : -1;
         const curve = Math.max(40, Math.abs(toX - fromX) * 0.42);
         edge.element.setAttribute(
@@ -1139,6 +1514,8 @@ function renderTreeFrame() {
         );
         edge.element.classList.toggle("is-on-path", Boolean(edge.isOnPath));
     });
+
+    updateFocusButtonVisibility();
 }
 
 function applyPhysicsStep(deltaTime) {
@@ -1229,6 +1606,7 @@ function animateExplorer(timestamp) {
     const camera = state.tree.camera;
     camera.x += (camera.targetX - camera.x) * 0.12;
     camera.y += (camera.targetY - camera.y) * 0.12;
+    camera.scale += (camera.targetScale - camera.scale) * 0.2;
 
     renderTreeFrame();
     state.tree.animationFrameId = window.requestAnimationFrame(animateExplorer);
@@ -1241,9 +1619,10 @@ function ensureAnimationLoop() {
 
 function screenToWorld(clientX, clientY) {
     const viewportRect = elements.treeViewport.getBoundingClientRect();
+    const scale = state.tree.camera.scale || state.tree.camera.targetScale || TREE_ZOOM_DEFAULT;
     return {
-        x: clientX - viewportRect.left - state.tree.camera.x,
-        y: clientY - viewportRect.top - state.tree.camera.y
+        x: (clientX - viewportRect.left - state.tree.camera.x) / scale,
+        y: (clientY - viewportRect.top - state.tree.camera.y) / scale
     };
 }
 
@@ -1289,58 +1668,264 @@ function handleNodePointerUp(event) {
     }
 }
 
+function startTreeViewportPan(event) {
+    if (event.button !== 2 || !elements.treeViewport) return;
+    if (state.tree.draggedNode || state.boardPanel.isDragging || state.boardPanel.isResizing) return;
+
+    event.preventDefault();
+    const pan = state.tree.viewportPan;
+    pan.isPanning = true;
+    pan.pointerId = event.pointerId;
+    pan.startClientX = event.clientX;
+    pan.startClientY = event.clientY;
+    pan.startTargetX = state.tree.camera.targetX;
+    pan.startTargetY = state.tree.camera.targetY;
+    pan.startX = state.tree.camera.x;
+    pan.startY = state.tree.camera.y;
+    elements.treeViewport.classList.add("is-panning");
+    elements.treeViewport.setPointerCapture?.(event.pointerId);
+}
+
+function handleTreeViewportPanMove(event) {
+    const pan = state.tree.viewportPan;
+    if (!pan.isPanning || pan.pointerId !== event.pointerId) return;
+
+    event.preventDefault();
+    const dx = event.clientX - pan.startClientX;
+    const dy = event.clientY - pan.startClientY;
+    state.tree.camera.targetX = pan.startTargetX + dx;
+    state.tree.camera.targetY = pan.startTargetY + dy;
+    state.tree.camera.x = pan.startX + dx;
+    state.tree.camera.y = pan.startY + dy;
+    renderTreeFrame();
+}
+
+function handleTreeViewportPanEnd(event) {
+    const pan = state.tree.viewportPan;
+    if (!pan.isPanning || pan.pointerId !== event.pointerId) return;
+
+    pan.isPanning = false;
+    pan.pointerId = null;
+    elements.treeViewport?.classList.remove("is-panning");
+    elements.treeViewport?.releasePointerCapture?.(event.pointerId);
+}
+
 function syncBoardPanelPosition() {
-    if (!elements.explorerStage || !elements.boardPanel || window.innerWidth <= 860) return;
+    if (!elements.explorerStage || !elements.boardPanel) return;
 
-    const stageRect = elements.explorerStage.getBoundingClientRect();
-    const panelWidth = elements.boardPanel.offsetWidth;
-    const panelHeight = elements.boardPanel.offsetHeight;
-    const maxX = Math.max(24, stageRect.width - panelWidth - 24);
-    const maxY = Math.max(24, stageRect.height - panelHeight - 24);
+    if (!isBoardPanelVisible()) {
+        syncDynamicLayoutInsets();
+        return;
+    }
 
-    state.boardPanel.x = clamp(state.boardPanel.x, 24, maxX);
-    state.boardPanel.y = clamp(state.boardPanel.y, 24, maxY);
-    elements.boardPanel.style.left = `${state.boardPanel.x}px`;
-    elements.boardPanel.style.top = `${state.boardPanel.y}px`;
+    if (window.innerWidth <= 860) {
+        elements.boardPanel.style.left = "";
+        elements.boardPanel.style.top = "";
+        elements.boardPanel.style.width = "";
+        elements.boardPanel.style.height = "";
+        syncDynamicLayoutInsets();
+        return;
+    }
+
+    ensureBoardPanelSizeSnapshot();
+    const stageRect = getBoardPanelStageRect();
+    if (!stageRect) return;
+
+    const aspect = Math.max(0.6, state.boardPanel.aspect || 1);
+    const limits = getBoardPanelSizeLimits(stageRect, aspect);
+    let nextHeight = state.boardPanel.height || elements.boardPanel.offsetHeight;
+    nextHeight = clamp(nextHeight, limits.minHeight, limits.maxHeight);
+    let nextWidth = Math.min(stageRect.width, Math.max(120, Math.round(nextHeight * aspect)));
+    nextHeight = Math.min(stageRect.height, Math.round(nextWidth / aspect));
+
+    const bounds = getBoardPanelBounds(stageRect, nextWidth, nextHeight);
+    const nextX = clamp(state.boardPanel.x, bounds.minX, bounds.maxX);
+    const nextY = clamp(state.boardPanel.y, bounds.minY, bounds.maxY);
+    applyBoardPanelFrame(nextX, nextY, nextWidth, nextHeight);
+    syncDynamicLayoutInsets();
+}
+
+function setBoardPanelVisibility(visible) {
+    const shouldShow = Boolean(visible);
+    window.clearTimeout(boardPanelCollapseTimeoutId);
+    state.boardPanel.isHidden = !shouldShow;
+    state.boardPanel.isDragging = false;
+    state.boardPanel.isResizing = false;
+    state.boardPanel.pointerId = null;
+
+    if (elements.boardPanel) {
+        elements.boardPanel.classList.remove("is-dragging", "is-resizing");
+        if (shouldShow) {
+            elements.boardPanel.classList.remove("is-collapsing");
+            elements.boardPanel.hidden = false;
+            elements.boardPanel.removeAttribute("aria-hidden");
+        } else {
+            elements.boardPanel.classList.remove("is-collapsing");
+            elements.boardPanel.hidden = true;
+            elements.boardPanel.setAttribute("aria-hidden", "true");
+        }
+    }
+
+    if (elements.explorerStage) {
+        elements.explorerStage.classList.toggle("is-board-hidden", !shouldShow);
+    }
+
+    if (elements.restoreBoardPanelBtn) {
+        elements.restoreBoardPanelBtn.hidden = shouldShow;
+    }
+
+    syncBoardPanelPosition();
+    focusActiveNode(false);
+}
+
+function collapseBoardPanel() {
+    if (!elements.boardPanel || state.boardPanel.isHidden) return;
+    window.clearTimeout(boardPanelCollapseTimeoutId);
+    state.boardPanel.isDragging = false;
+    state.boardPanel.isResizing = false;
+    state.boardPanel.pointerId = null;
+    elements.boardPanel.classList.remove("is-dragging", "is-resizing");
+    elements.boardPanel.hidden = false;
+    elements.boardPanel.classList.add("is-collapsing");
+    elements.boardPanel.setAttribute("aria-hidden", "true");
+
+    boardPanelCollapseTimeoutId = window.setTimeout(() => {
+        setBoardPanelVisibility(false);
+    }, BOARD_PANEL_COLLAPSE_DURATION_MS);
 }
 
 function startBoardDrag(event) {
-    if (window.innerWidth <= 860 || event.button !== 0 || !elements.explorerStage) return;
+    if (window.innerWidth <= 860 || event.button !== 0 || !elements.explorerStage || !isBoardPanelVisible()) return;
+    if (state.boardPanel.isResizing) return;
 
-    const stageRect = elements.explorerStage.getBoundingClientRect();
+    event.preventDefault();
+    ensureBoardPanelSizeSnapshot();
     const panelRect = elements.boardPanel.getBoundingClientRect();
     state.boardPanel.isDragging = true;
     state.boardPanel.pointerId = event.pointerId;
     state.boardPanel.offsetX = event.clientX - panelRect.left;
     state.boardPanel.offsetY = event.clientY - panelRect.top;
     elements.boardPanel.classList.add("is-dragging");
-    elements.boardDragHandle?.setPointerCapture?.(event.pointerId);
+    event.currentTarget?.setPointerCapture?.(event.pointerId);
 }
 
 function handleBoardPointerMove(event) {
     if (!state.boardPanel.isDragging || !elements.explorerStage || !elements.boardPanel) return;
+    if (state.boardPanel.pointerId !== event.pointerId) return;
 
-    const stageRect = elements.explorerStage.getBoundingClientRect();
-    const width = elements.boardPanel.offsetWidth;
-    const height = elements.boardPanel.offsetHeight;
+    const stageRect = getBoardPanelStageRect();
+    if (!stageRect) return;
+
+    const width = state.boardPanel.width || elements.boardPanel.offsetWidth;
+    const height = state.boardPanel.height || elements.boardPanel.offsetHeight;
     const rawX = event.clientX - stageRect.left - state.boardPanel.offsetX;
     const rawY = event.clientY - stageRect.top - state.boardPanel.offsetY;
-    const maxX = Math.max(24, stageRect.width - width - 24);
-    const maxY = Math.max(24, stageRect.height - height - 24);
+    const bounds = getBoardPanelBounds(stageRect, width, height);
 
-    state.boardPanel.x = clamp(rawX, 24, maxX);
-    state.boardPanel.y = clamp(rawY, 24, maxY);
-    elements.boardPanel.style.left = `${state.boardPanel.x}px`;
-    elements.boardPanel.style.top = `${state.boardPanel.y}px`;
+    const nextX = clamp(rawX, bounds.minX, bounds.maxX);
+    const nextY = clamp(rawY, bounds.minY, bounds.maxY);
+    applyBoardPanelFrame(nextX, nextY, width, height);
+    syncDynamicLayoutInsets();
     focusActiveNode(false);
 }
 
 function handleBoardPointerUp(event) {
     if (!state.boardPanel.isDragging) return;
+    if (state.boardPanel.pointerId !== event.pointerId) return;
     state.boardPanel.isDragging = false;
     elements.boardPanel?.classList.remove("is-dragging");
-    elements.boardDragHandle?.releasePointerCapture?.(state.boardPanel.pointerId || event.pointerId);
+    elements.boardDragHandleTop?.releasePointerCapture?.(event.pointerId);
+    elements.boardDragHandleBottom?.releasePointerCapture?.(event.pointerId);
     state.boardPanel.pointerId = null;
+    syncDynamicLayoutInsets();
+}
+
+function getResizeDeltaHeight(direction, deltaX, deltaY, aspect) {
+    const aspectSafe = Math.max(0.45, aspect || 1);
+    if (direction === "n") return -deltaY;
+    if (direction === "s") return deltaY;
+    if (direction === "e") return deltaX / aspectSafe;
+    if (direction === "w") return -deltaX / aspectSafe;
+    if (direction === "ne") return ((deltaX / aspectSafe) - deltaY) / 2;
+    if (direction === "nw") return ((-deltaX / aspectSafe) - deltaY) / 2;
+    if (direction === "se") return ((deltaX / aspectSafe) + deltaY) / 2;
+    if (direction === "sw") return ((-deltaX / aspectSafe) + deltaY) / 2;
+    return deltaY;
+}
+
+function startBoardResize(event) {
+    if (window.innerWidth <= 860 || event.button !== 0 || !elements.boardPanel || !isBoardPanelVisible()) return;
+    if (state.boardPanel.isDragging) return;
+
+    const direction = normalizeText(event.currentTarget?.dataset?.resizeDirection).toLowerCase();
+    if (!direction) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    ensureBoardPanelSizeSnapshot();
+
+    state.boardPanel.isResizing = true;
+    state.boardPanel.pointerId = event.pointerId;
+    state.boardPanel.resizeDirection = direction;
+    state.boardPanel.resizeStartClientX = event.clientX;
+    state.boardPanel.resizeStartClientY = event.clientY;
+    state.boardPanel.resizeStartX = state.boardPanel.x;
+    state.boardPanel.resizeStartY = state.boardPanel.y;
+    state.boardPanel.resizeStartWidth = state.boardPanel.width || elements.boardPanel.offsetWidth;
+    state.boardPanel.resizeStartHeight = state.boardPanel.height || elements.boardPanel.offsetHeight;
+    elements.boardPanel.classList.add("is-resizing");
+    event.currentTarget?.setPointerCapture?.(event.pointerId);
+}
+
+function handleBoardResizeMove(event) {
+    if (!state.boardPanel.isResizing || !elements.boardPanel) return;
+    if (state.boardPanel.pointerId !== event.pointerId) return;
+
+    const stageRect = getBoardPanelStageRect();
+    if (!stageRect) return;
+
+    const direction = state.boardPanel.resizeDirection;
+    const startWidth = state.boardPanel.resizeStartWidth;
+    const startHeight = state.boardPanel.resizeStartHeight;
+    const aspect = startWidth / Math.max(1, startHeight);
+    const limits = getBoardPanelSizeLimits(stageRect, aspect);
+    const deltaX = event.clientX - state.boardPanel.resizeStartClientX;
+    const deltaY = event.clientY - state.boardPanel.resizeStartClientY;
+    const heightDelta = getResizeDeltaHeight(direction, deltaX, deltaY, aspect);
+    let nextHeight = clamp(startHeight + heightDelta, limits.minHeight, limits.maxHeight);
+    let nextWidth = Math.min(stageRect.width, Math.max(120, Math.round(nextHeight * aspect)));
+    nextHeight = Math.min(stageRect.height, Math.round(nextWidth / Math.max(0.45, aspect)));
+
+    let nextX = state.boardPanel.resizeStartX;
+    let nextY = state.boardPanel.resizeStartY;
+    if (direction.includes("w")) {
+        nextX = state.boardPanel.resizeStartX + (startWidth - nextWidth);
+    }
+    if (direction.includes("n")) {
+        nextY = state.boardPanel.resizeStartY + (startHeight - nextHeight);
+    }
+
+    const bounds = getBoardPanelBounds(stageRect, nextWidth, nextHeight);
+    nextX = clamp(nextX, bounds.minX, bounds.maxX);
+    nextY = clamp(nextY, bounds.minY, bounds.maxY);
+
+    applyBoardPanelFrame(nextX, nextY, nextWidth, nextHeight);
+    syncDynamicLayoutInsets();
+    focusActiveNode(false);
+}
+
+function handleBoardResizeEnd(event) {
+    if (!state.boardPanel.isResizing) return;
+    if (state.boardPanel.pointerId !== event.pointerId) return;
+
+    state.boardPanel.isResizing = false;
+    state.boardPanel.pointerId = null;
+    state.boardPanel.resizeDirection = "";
+    elements.boardPanel?.classList.remove("is-resizing");
+    elements.boardResizeHandles.forEach((handle) => {
+        handle.releasePointerCapture?.(event.pointerId);
+    });
+    syncDynamicLayoutInsets();
 }
 
 function renderContext(context) {
@@ -1350,22 +1935,13 @@ function renderContext(context) {
     applyTone(context.difficultyLevel);
 
     if (elements.explorerEyebrow) {
-        elements.explorerEyebrow.textContent = context.boardSourceLabel;
+        elements.explorerEyebrow.textContent = "Explorer";
     }
     if (elements.openingTitle) {
         elements.openingTitle.textContent = context.title;
     }
     if (elements.openingSubtitle) {
         elements.openingSubtitle.textContent = context.subtitle;
-    }
-    if (elements.boardSourceLabel) {
-        elements.boardSourceLabel.textContent = context.boardSourceLabel;
-    }
-    if (elements.boardContextTitle) {
-        elements.boardContextTitle.textContent = context.boardTitle;
-    }
-    if (elements.positionDescription) {
-        elements.positionDescription.textContent = context.description;
     }
     if (elements.difficultyBadge) {
         elements.difficultyBadge.textContent = context.difficultyLabel;
@@ -1438,12 +2014,38 @@ function setupEventListeners() {
         });
     });
 
-    elements.boardDragHandle?.addEventListener("pointerdown", startBoardDrag);
+    elements.hideBoardPanelBtn?.addEventListener("click", () => {
+        collapseBoardPanel();
+    });
+    elements.restoreBoardPanelBtn?.addEventListener("click", () => {
+        setBoardPanelVisibility(true);
+    });
+
+    elements.treeViewport?.addEventListener("pointerdown", startTreeViewportPan);
+    elements.treeViewport?.addEventListener("wheel", handleTreeViewportWheel, { passive: false });
+    elements.treeViewport?.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+    });
+    elements.boardDragHandleTop?.addEventListener("pointerdown", startBoardDrag);
+    elements.boardDragHandleBottom?.addEventListener("pointerdown", startBoardDrag);
+    elements.boardResizeHandles.forEach((handle) => {
+        handle.addEventListener("pointerdown", startBoardResize);
+    });
     window.addEventListener("pointermove", (event) => {
+        handleTreeViewportPanMove(event);
+        handleBoardResizeMove(event);
         handleBoardPointerMove(event);
         handleNodePointerMove(event);
     });
     window.addEventListener("pointerup", (event) => {
+        handleTreeViewportPanEnd(event);
+        handleBoardResizeEnd(event);
+        handleBoardPointerUp(event);
+        handleNodePointerUp(event);
+    });
+    window.addEventListener("pointercancel", (event) => {
+        handleTreeViewportPanEnd(event);
+        handleBoardResizeEnd(event);
         handleBoardPointerUp(event);
         handleNodePointerUp(event);
     });
@@ -1452,10 +2054,15 @@ function setupEventListeners() {
         syncTreeViewportMetrics();
         refreshNodeMetrics();
         focusActiveNode(true);
+        updateZoomUi();
     });
 }
 
 function initializeExplorer() {
+    setBoardPanelVisibility(true);
+    updateZoomUi();
+    hideTreeZoomToast();
+    syncDynamicLayoutInsets();
     setupEventListeners();
     hydrateFromRequest();
     ensureAnimationLoop();

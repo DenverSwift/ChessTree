@@ -21,7 +21,7 @@
         })();
     </script>
     <link rel="stylesheet" href="css/theme.css?v=20260402b" />
-    <link rel="stylesheet" href="css/explorer.css?v=20260428b" />
+    <link rel="stylesheet" href="css/explorer.css?v=20260428e" />
 </head>
 <body>
 <header class="topbar">
@@ -81,7 +81,7 @@
                         Resume Last Tree
                     </button>
                     <button id="focusActiveNodeBtn" class="control-btn" type="button">
-                        Focus Current Node
+                        Focus Current Move
                     </button>
                 </div>
             </div>
@@ -98,49 +98,62 @@
                     <span class="tree-footer__label">Current Line</span>
                     <p id="currentLineMoves" class="tree-footer__value">Start position</p>
                 </div>
-                <div class="tree-footer__block tree-footer__block--muted">
-                    <span class="tree-footer__label">Status</span>
-                    <p id="treeStatus" class="tree-footer__value">Nodes can be dragged to refine the layout.</p>
-                </div>
+            </div>
+
+            <button id="restoreBoardPanelBtn" class="tree-restore-btn" type="button" hidden>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M8 4V20M12 4V20M16 4V20M4 8H20M4 12H20M4 16H20" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+                <span>&#1042;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100; &#1076;&#1077;&#1088;&#1077;&#1074;&#1086;</span>
+            </button>
+
+            <div id="treeZoomToast" class="tree-zoom-toast" aria-live="polite" aria-hidden="true">
+                <span class="tree-zoom-toast__label">Zoom</span>
+                <span id="treeZoomToastValue" class="tree-zoom-toast__value">100%</span>
             </div>
         </div>
 
         <aside id="boardPanel" class="board-panel" aria-label="Board panel">
-            <div id="boardDragHandle" class="board-panel__header">
-                <div class="board-panel__heading">
-                    <p id="boardSourceLabel" class="board-panel__eyebrow">Toolbar entry</p>
-                    <h2 id="boardContextTitle" class="board-panel__title">Starting Position</h2>
-                </div>
-                <span class="board-panel__drag">Drag board</span>
+            <div class="board-panel__top-row">
+                <button id="boardDragHandleTop" class="board-panel__grip board-panel__grip--top" type="button" aria-label="Move preview panel">
+                    <span class="board-panel__grip-lines" aria-hidden="true"></span>
+                </button>
+                <button id="hideBoardPanelBtn" class="board-panel__hide" type="button" aria-label="Collapse preview panel">
+                    <span aria-hidden="true">&#10005;</span>
+                </button>
             </div>
 
             <div class="board-frame">
                 <div id="chessboard" class="chessboard" role="img" aria-label="Chess position"></div>
             </div>
 
-            <div class="board-panel__meta">
-                <span id="difficultyBadge" class="tone-badge">Default</span>
-                <span id="lineBadge" class="tone-chip">No line selected</span>
+            <div class="board-panel__footer-row">
+                <div class="board-panel__meta">
+                    <span id="difficultyBadge" class="tone-badge">Default</span>
+                    <span id="lineBadge" class="tone-chip">No line selected</span>
+                </div>
+                <button id="boardDragHandleBottom" class="board-panel__grip board-panel__grip--bottom" type="button" aria-label="Move preview panel">
+                    <span class="board-panel__grip-lines" aria-hidden="true"></span>
+                </button>
             </div>
 
-            <p id="positionDescription" class="board-panel__description">
-                Default explorer position opened from the toolbar.
-            </p>
+            <div class="board-panel__resize-handles" aria-hidden="true">
+                <button class="board-panel__resize-handle board-panel__resize-handle--n" type="button" data-resize-direction="n" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--s" type="button" data-resize-direction="s" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--e" type="button" data-resize-direction="e" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--w" type="button" data-resize-direction="w" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--ne" type="button" data-resize-direction="ne" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--nw" type="button" data-resize-direction="nw" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--se" type="button" data-resize-direction="se" aria-label="Resize preview"></button>
+                <button class="board-panel__resize-handle board-panel__resize-handle--sw" type="button" data-resize-direction="sw" aria-label="Resize preview"></button>
+            </div>
         </aside>
     </section>
 </main>
 
-<script src="js/theme-switcher.js"></script>
 <script src="js/toolbar-tooltip.js?v=20260402a"></script>
 <script src="js/opening-token.js?v=20260404a"></script>
-<script src="js/explorer.js?v=20260428b"></script>
-
-<a href="help/getting-started.html" class="help-fab" aria-label="Open help" title="Help" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-        <path d="M9.9 9.2C10.2 8.2 11 7.5 12.2 7.5C13.5 7.5 14.5 8.3 14.5 9.6C14.5 10.7 13.9 11.3 13.1 11.8C12.3 12.3 12 12.8 12 13.6V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="12" cy="17" r="1.2" fill="currentColor"/>
-    </svg>
-</a>
+<script src="js/explorer.js?v=20260428e"></script>
 </body>
 </html>
